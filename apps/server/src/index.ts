@@ -2,7 +2,9 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
+import { webhookCallback } from 'grammy';
 import { createApp } from './app.ts';
+import { botSecret, createBot } from './bot.ts';
 import { config } from './config.ts';
 import { chainFromEnv } from './chain.ts';
 import { Db } from './db.ts';
@@ -30,6 +32,28 @@ if (config.chain === 'testnet') {
   }
 }
 const app = createApp(world, config, { processChain });
+
+// The bot: a webhook when the game has a public https address, long polling otherwise (local runs).
+if (config.botToken) {
+  const { bot, notify, setup } = createBot(world, config);
+  await bot.init();
+  const webhook = config.webAppUrl.startsWith('https://') && process.env.BOT_MODE !== 'polling';
+  if (webhook) {
+    const secretToken = botSecret(config.botToken);
+    app.post('/api/bot', webhookCallback(bot, 'hono', { secretToken }));
+    await bot.api.setWebhook(new URL('/api/bot', config.webAppUrl).toString(), { secret_token: secretToken, drop_pending_updates: true });
+  } else {
+    await bot.api.deleteWebhook();
+    void bot.start({ drop_pending_updates: true });
+  }
+  await setup().catch((e) => console.warn('bot: setup failed:', e.message));
+  console.log(`bot @${bot.botInfo.username} (${webhook ? 'webhook' : 'polling'})`);
+  const loop = async () => {
+    await notify().catch((e) => console.warn('bot: notify failed:', e.message));
+    setTimeout(loop, 60_000);
+  };
+  setTimeout(loop, 10_000);
+}
 
 // In production the same server also hands out the built Mini App.
 const dist = resolve(config.webDist);

@@ -20,7 +20,9 @@ export function createApp(world: World, cfg: Config, hooks: { processChain?: () 
 
   // ---- who is asking ----
   app.use('/api/*', async (c, next) => {
-    if (c.req.path === '/api/health' || c.req.path.startsWith('/api/rewards') || c.req.path.startsWith('/api/proof')) return next();
+    // Routes with their own checks: the bot webhook (secret header), cron (admin key), public proof and rewards site.
+    const open = ['/api/rewards', '/api/proof', '/api/bot', '/api/cron'];
+    if (c.req.path === '/api/health' || open.some((p) => c.req.path.startsWith(p))) return next();
     let user = verifyInitData(c.req.header('x-init-data') ?? '', cfg.botToken);
     const dev = c.req.header('x-dev-user');
     if (!user && cfg.devAuth && dev) {

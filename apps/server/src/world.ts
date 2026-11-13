@@ -1,12 +1,16 @@
 import { randomBytes } from 'node:crypto';
 import {
-  ARCHIPELAGO_MAX, BIOMES, BUILDINGS, DAY, EPOCH, EPOCHS_PER_SEASON, GameError, HOUR, MAX_OPEN_REQUESTS, RARE, RARE_OF,
+  ARCHIPELAGO_MAX, BIOMES, BUILDINGS, DAY, EPOCH, EPOCHS_PER_SEASON, GameError, HOUR, MAX_OPEN_REQUESTS, PRODUCERS, RARE, RARE_OF,
+  storageHours,
   REFERRAL_XP, RESOURCES, TRADER_TARGET_STOCK, arrive, buildTree, buy, caravanCapacity, collect, dayOf, dig, digsLeft,
   eligible, huntMap, isRare, islandLevel, newIsland, questProgress, quote, sell, sendCaravan, splitPool, touch, upgrade,
   type Biome, type Building, type Caravan, type Island, type PointEvent, type Producer, type Rare, type Res, type Stock,
 } from '@isle/core';
 import type { Config } from './config.ts';
 import { all, getMeta, one, run, setMeta, type Db, type Tx } from './db.ts';
+
+export type NoticeKind = 'caravan_in' | 'caravan_back' | 'epoch_closed' | 'storage_full' | 'week_ending';
+export interface Notice { playerId: string; tgId: string; lang: 'en' | 'ru'; items: { kind: NoticeKind; data: Record<string, any> }[] }
 
 export interface Player {
   id: string;
@@ -569,19 +573,64 @@ export class World {
     };
   }
 
-  /** Players whose storage has just filled up and who were not told yet (for the bot). */
-  async storageAlerts(ctx: Ctx): Promise<{ tgId: string; lang: string }[]> {
-    const rows = await all(ctx.tx, 'SELECT id, tg_id, lang, island, notified FROM players WHERE npc = 0 AND tg_id IS NOT NULL');
-    const out: { tgId: string; lang: string }[] = [];
-    for (const r of rows) {
-      const isl = JSON.parse(r.island as string) as Island;
-      const notified = JSON.parse(r.notified as string) as { full?: number };
-      const mark = Math.min(isl.collectedAt.solar, isl.collectedAt.factory, isl.collectedAt.datacenter);
-      const hours = [4, 5, 6, 7, 8, 9, 10, 11, 12, 14][Math.max(1, isl.levels.storage) - 1];
-      if (ctx.now - mark < hours * HOUR || notified.full === mark) continue;
-      out.push({ tgId: r.tg_id as string, lang: r.lang as string });
-      await run(ctx.tx, 'UPDATE players SET notified = ? WHERE id = ?', [JSON.stringify({ ...notified, full: mark }), r.id as string]);
+  /**
+   * What the bot should tell players: caravans and closed weeks they have not seen in the app yet, a full storage,
+   * and a reminder when the week is about to end. Each notice is handed out once.
+   * Reminders stay off while the time machine runs fast, or they would turn into spam.
+   */
+  async notices(ctx: Ctx): Promise<Notice[]> {
+    const byPlayer = new Map<string, Notice>();
+    const players = await all(ctx.tx, 'SELECT id, tg_id, lang, island, notified FROM players WHERE npc = 0 AND tg_id IS NOT NULL');
+    const info = new Map(players.map((r) => [r.id as string, r]));
+    const notice = (r: Record<string, unknown>) => {
+      let n = byPlayer.get(r.id as string);
+      if (!n) byPlayer.set(r.id as string, (n = { playerId: r.id as string, tgId: r.tg_id as string, lang: r.lang === 'ru' ? 'ru' : 'en', items: [] }));
+      return n;
+    };
+    const flags = (r: Record<string, unknown>) => JSON.parse(r.notified as string) as { full?: number; weekWarn?: number; blocked?: boolean };
+
+    const top = await one<{ id: number | null }>(ctx.tx, 'SELECT MAX(id) AS id FROM events WHERE pushed = 0');
+    if (top?.id) {
+      const events = await all(ctx.tx, "SELECT player_id, kind, data, seen FROM events WHERE pushed = 0 AND id <= ? AND kind IN ('caravan_in', 'caravan_back', 'epoch_closed') ORDER BY id", [Number(top.id)]);
+      await run(ctx.tx, 'UPDATE events SET pushed = 1 WHERE pushed = 0 AND id <= ?', [Number(top.id)]);
+      for (const e of events) {
+        const r = info.get(e.player_id as string);
+        if (!r || Number(e.seen) === 1 || flags(r).blocked) continue;
+        notice(r).items.push({ kind: e.kind as NoticeKind, data: JSON.parse(e.data as string) });
+      }
     }
-    return out;
+
+    if (ctx.speed <= 60) {
+      const endsAt = ctx.genesis + ctx.epoch * EPOCH;
+      for (const r of players) {
+        const f = flags(r);
+        if (f.blocked) continue;
+        const isl = JSON.parse(r.island as string) as Island;
+        const built = PRODUCERS.filter((b) => isl.levels[b] > 0);
+        const mark = built.length ? Math.min(...built.map((b) => isl.collectedAt[b])) : ctx.now;
+        let changed = false;
+        if (ctx.now - mark >= storageHours(isl) * HOUR && f.full !== mark) {
+          notice(r).items.push({ kind: 'storage_full', data: {} });
+          f.full = mark;
+          changed = true;
+        }
+        if (endsAt - ctx.now <= 12 * HOUR && f.weekWarn !== ctx.epoch) {
+          const pts = await one<{ n: number }>(ctx.tx, 'SELECT COALESCE(SUM(amount), 0) AS n FROM points WHERE player_id = ? AND epoch = ?', [r.id as string, ctx.epoch]);
+          if (Number(pts?.n ?? 0) > 0) notice(r).items.push({ kind: 'week_ending', data: { points: Number(pts!.n) } });
+          f.weekWarn = ctx.epoch;
+          changed = true;
+        }
+        if (changed) await run(ctx.tx, 'UPDATE players SET notified = ? WHERE id = ?', [JSON.stringify(f), r.id as string]);
+      }
+    }
+    return [...byPlayer.values()].filter((n) => n.items.length);
+  }
+
+  /** The player blocked the bot: stop writing to them. */
+  async markBlocked(tgId: string): Promise<void> {
+    await this.db.write(async (tx) => {
+      const r = await one<{ id: string; notified: string }>(tx, 'SELECT id, notified FROM players WHERE tg_id = ?', [tgId]);
+      if (r) await run(tx, 'UPDATE players SET notified = ? WHERE id = ?', [JSON.stringify({ ...JSON.parse(r.notified), blocked: true }), r.id]);
+    });
   }
 }

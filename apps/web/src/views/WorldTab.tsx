@@ -45,7 +45,8 @@ export function WorldTab({ game, state }: { game: Game; state: State }) {
     if (await game.act(path, body)) void load();
   };
   const invite = () => {
-    const link = BOT ? `https://t.me/${BOT}?startapp=ref_${state.me.id}` : `${location.origin}/?ref=ref_${state.me.id}`;
+    // ?start= opens the bot, whose button carries the invite into the Mini App.
+    const link = BOT ? `https://t.me/${BOT}?start=ref_${state.me.id}` : `${location.origin}/?ref=ref_${state.me.id}`;
     if (BOT && tg()?.openTelegramLink) tg().openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
     else void navigator.clipboard?.writeText(link).then(() => game.say(t('world.copied')));
   };

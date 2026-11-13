@@ -266,6 +266,16 @@ describe('a game from start to payout', () => {
     void world;
   });
 
+  it('lets cron reach the chain endpoint with the admin key only, without Telegram data', async () => {
+    const { app } = await boot({ adminKey: 'k3y' });
+    expect((await app.request('/api/cron/chain', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/api/cron/chain', { method: 'POST', headers: { 'x-admin-key': 'nope' } })).status).toBe(403);
+    const ok = await app.request('/api/cron/chain', { method: 'POST', headers: { authorization: 'Bearer k3y' } });
+    expect(ok.status).toBe(200);
+    expect(await ok.json()).toEqual({ done: 0, chain: 'off' });
+    expect((await app.request('/api/proof')).status).toBe(200);
+  });
+
   it('speeds the clock up for the demo and guards the control', async () => {
     const { call, world } = await boot();
     await call('1', 'POST', '/api/start', { biome: 'snow' });

@@ -13,6 +13,7 @@
     "@hono/node-server": "^1.14.0",
     "@isle/core": "*",
     "@libsql/client": "^0.15.0",
+    "grammy": "^1.46.0",
     "hono": "^4.7.0",
     "near-api-js": "^7.5.3"
   }
