@@ -1,0 +1,54 @@
+{
+  "epoch": 3,
+  "leaves": [
+    {
+      "account_id": "tg1.isle.testnet",
+      "amount": "1000000000000000000000000",
+      "leaf": "43a61a0df28b23a115e17a00370f39d24a7f07138a4850bd1c3cda92ae4176f6",
+      "proof": [
+        "ea0c12e2c5ffa3ca26896760be1937fc099c029f1402d53b838cbae2f3656099",
+        "8d57e14d47339a7ea8982b2790ab8d5391b920db4e08417ccdc914b5956d8b02",
+        "66a94ccea895dc12ed7062b93a6460ddbb08d9c0e77823e0457625b44aa7d768"
+      ]
+    },
+    {
+      "account_id": "tg2.isle.testnet",
+      "amount": "2500000000000000000000000",
+      "leaf": "ea0c12e2c5ffa3ca26896760be1937fc099c029f1402d53b838cbae2f3656099",
+      "proof": [
+        "43a61a0df28b23a115e17a00370f39d24a7f07138a4850bd1c3cda92ae4176f6",
+        "8d57e14d47339a7ea8982b2790ab8d5391b920db4e08417ccdc914b5956d8b02",
+        "66a94ccea895dc12ed7062b93a6460ddbb08d9c0e77823e0457625b44aa7d768"
+      ]
+    },
+    {
+      "account_id": "tg3.isle.testnet",
+      "amount": "1",
+      "leaf": "74fe4d718b13654487c5c74c0c9888c062551741da67a858ad12bc7b089e3f2c",
+      "proof": [
+        "95660538c452a6de27f5e0070f8c3fc0f9f5272cfa3cf1d7eea67b0ee7086712",
+        "06f1d77387123760d09e8ff6f53a0802c7203d5f3e608905e679687a41ef50de",
+        "66a94ccea895dc12ed7062b93a6460ddbb08d9c0e77823e0457625b44aa7d768"
+      ]
+    },
+    {
+      "account_id": "harbor.sputnik-dao.testnet",
+      "amount": "500000000000000000000000",
+      "leaf": "95660538c452a6de27f5e0070f8c3fc0f9f5272cfa3cf1d7eea67b0ee7086712",
+      "proof": [
+        "74fe4d718b13654487c5c74c0c9888c062551741da67a858ad12bc7b089e3f2c",
+        "06f1d77387123760d09e8ff6f53a0802c7203d5f3e608905e679687a41ef50de",
+        "66a94ccea895dc12ed7062b93a6460ddbb08d9c0e77823e0457625b44aa7d768"
+      ]
+    },
+    {
+      "account_id": "tg5.isle.testnet",
+      "amount": "42",
+      "leaf": "66a94ccea895dc12ed7062b93a6460ddbb08d9c0e77823e0457625b44aa7d768",
+      "proof": [
+        "d970bf41552746a6a169c68bb8734397cb60e84b0a89783013174a8451b2c0f3"
+      ]
+    }
+  ],
+  "root": "462c2ca4cd36d32dc337222ed40f56b2b9d017c7d6595435e51dfcb1a88d85dc"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@isle/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/index.ts",
+    "start": "tsx --env-file-if-exists=../../.env src/index.ts",
+    "dev:local": "DEV_AUTH=1 DEMO_CONTROLS=1 tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.0",
+    "@isle/core": "*",
+    "@libsql/client": "^0.15.0",
+    "hono": "^4.7.0",
+    "near-api-js": "^7.5.3"
+  }
+}
