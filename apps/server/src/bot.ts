@@ -120,7 +120,8 @@ export function createBot(world: World, cfg: Config, opts: { botInfo?: UserFromG
         await bot.api.sendMessage(n.tgId, text, { reply_markup: playButton(n.lang) });
         sent++;
       } catch (e) {
-        if (e instanceof GrammyError && e.error_code === 403) await world.markBlocked(n.tgId);
+        // Blocked by the user, or a chat that does not exist: stop writing there.
+        if (e instanceof GrammyError && (e.error_code === 403 || /chat not found/i.test(e.description))) await world.markBlocked(n.tgId);
         else console.warn('bot: notify failed:', (e as Error).message);
       }
     }
