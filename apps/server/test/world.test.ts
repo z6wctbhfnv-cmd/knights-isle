@@ -55,7 +55,7 @@ describe('auth', () => {
     const init = signInitData({ auth_date: String(Math.floor(Date.now() / 1000)), user: JSON.stringify({ id: 7, first_name: 'Real' }) }, 'TEST:token');
     const ok = await app.request('/api/state', { headers: { 'x-init-data': init } });
     expect(ok.status).toBe(200);
-    expect(await ok.json()).toMatchObject({ needStart: true, name: 'Real' });
+    expect(await ok.json()).toMatchObject({ needStart: true, name: 'Real', lang: 'en' });
   });
 });
 
@@ -65,8 +65,11 @@ describe('a game from start to payout', () => {
     expect((await call('1:Ann', 'GET', '/api/state')).json.needStart).toBe(true);
     expect((await call('1:Ann', 'POST', '/api/collect')).json.error).toBe('start');
     expect((await call('1:Ann', 'POST', '/api/start', { biome: 'moon' })).json.error).toBe('biome');
-    const started = (await call('1:Ann', 'POST', '/api/start', { biome: 'snow' })).json.state;
+    const started = (await call('1:Ann:ru', 'POST', '/api/start', { biome: 'snow' })).json.state;
     expect(started.island.biome).toBe('snow');
+    expect(started.me.lang).toBe('en'); // English by default, even with a Russian Telegram
+    expect((await call('1:Ann:ru', 'POST', '/api/lang', { lang: 'ru' })).json.state.me.lang).toBe('ru');
+    expect((await call('1:Ann:ru', 'POST', '/api/lang', { lang: 'en' })).json.state.me.lang).toBe('en');
     expect(started.events.map((e: any) => e.kind)).toEqual(['welcome']);
     expect((await call('1:Ann', 'POST', '/api/start', { biome: 'snow' })).json.error).toBe('exists');
 

@@ -29,7 +29,7 @@ export function useGame(): Game {
   const stateRef = useRef<State | null>(null);
   const toastTimer = useRef<number>(0);
 
-  const lang: Lang = state?.me.lang ?? need?.lang ?? (navigator.language.startsWith('ru') ? 'ru' : 'en');
+  const lang: Lang = state?.me.lang ?? need?.lang ?? 'en';
 
   const say = useCallback((text: string) => {
     setToast(text);

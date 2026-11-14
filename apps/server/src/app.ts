@@ -54,7 +54,8 @@ export function createApp(world: World, cfg: Config, hooks: { processChain?: () 
     const user = c.get('user');
     const out = await world.act(async (ctx) => {
       const p = await world.byTg(ctx, user.id);
-      return p ? { state: await world.state(ctx, p) } : { needStart: true, name: user.name, lang: user.lang };
+      // English for everyone by default; Russian only if the player switches it on in Quests.
+      return p ? { state: await world.state(ctx, p) } : { needStart: true, name: user.name, lang: 'en' };
     });
     return c.json({ ...out, demo: cfg.demoControls });
   });
@@ -64,7 +65,7 @@ export function createApp(world: World, cfg: Config, hooks: { processChain?: () 
     const input = await body(c);
     const ref = String(input.ref ?? user.startParam ?? '').replace(/^ref_/, '') || null;
     const out = await world.act(async (ctx) => {
-      const p = await world.createPlayer(ctx, { tgId: user.id, name: user.name, lang: user.lang, biome: input.biome as Biome, ref });
+      const p = await world.createPlayer(ctx, { tgId: user.id, name: user.name, lang: 'en', biome: input.biome as Biome, ref });
       return { state: await world.state(ctx, p) };
     });
     return c.json(out);

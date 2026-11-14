@@ -48,7 +48,6 @@ function t(lang: Lang, key: keyof typeof TEXT, vars: Record<string, string | num
   return s;
 }
 
-const langOf = (code?: string): Lang => (code === 'ru' ? 'ru' : 'en');
 const REF = /^ref_i[0-9a-f]{10}$/;
 
 /** Turns one player's notices into one message. */
@@ -86,12 +85,18 @@ export function createBot(world: World, cfg: Config, opts: { botInfo?: UserFromG
     return new InlineKeyboard().webApp(t(lang, 'play'), url.toString());
   };
 
+  /** English for everyone; Russian only for a player who switched it on in the game. */
+  const playerLang = async (tgId?: number): Promise<{ known: boolean; lang: Lang }> => {
+    if (!tgId) return { known: false, lang: 'en' };
+    const p = await world.act((w) => world.byTg(w, String(tgId)));
+    return { known: !!p, lang: p?.lang === 'ru' ? 'ru' : 'en' };
+  };
+
   bot.command('start', async (ctx) => {
-    const lang = langOf(ctx.from?.language_code);
+    const { known, lang } = await playerLang(ctx.from?.id);
     const name = ctx.from?.first_name ?? '';
     const payload = ctx.match.trim();
     const ref = REF.test(payload) ? payload : undefined;
-    const known = ctx.from ? await world.act(async (w) => !!(await world.byTg(w, String(ctx.from!.id)))) : false;
     let text = t(lang, known ? 'back' : 'hello', { name });
     if (ref && !known) text += `\n\n${t(lang, 'invited')}`;
     if (!https) text += `\n\n${t(lang, 'noApp')}`;
@@ -99,13 +104,13 @@ export function createBot(world: World, cfg: Config, opts: { botInfo?: UserFromG
   });
 
   bot.command('help', async (ctx) => {
-    const lang = langOf(ctx.from?.language_code);
+    const { lang } = await playerLang(ctx.from?.id);
     await ctx.reply(t(lang, 'help'), { reply_markup: playButton(lang) });
   });
 
   // Anything else: just offer the island.
   bot.on('message', async (ctx) => {
-    const lang = langOf(ctx.from?.language_code);
+    const { lang } = await playerLang(ctx.from?.id);
     await ctx.reply(t(lang, 'help'), { reply_markup: playButton(lang) });
   });
 

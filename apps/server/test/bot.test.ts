@@ -61,8 +61,8 @@ describe('bot', () => {
     await s.say(555, '/start ref_i0123456789');
     const [m] = s.sent();
     expect(m.payload.chat_id).toBe(555);
-    expect(m.payload.text).toMatch(/Привет, Ann/);
-    expect(m.payload.text).toMatch(/позвал друг/);
+    expect(m.payload.text).toMatch(/^Hi, Ann/); // English for everyone, even with a Russian Telegram
+    expect(m.payload.text).toMatch(/A friend invited you/);
     expect(m.payload.reply_markup.inline_keyboard[0][0].web_app.url).toBe('https://isle.example/?ref=ref_i0123456789');
     expect(m.payload.text).not.toMatch(CHAIN_WORDS);
 
@@ -72,7 +72,7 @@ describe('bot', () => {
     expect(m2.payload.text).toMatch(/^Hi, Ann/);
     expect(m2.payload.reply_markup.inline_keyboard[0][0].web_app.url).toBe('https://isle.example/');
 
-    // A returning player is welcomed back and keeps no invite.
+    // A returning player who chose Russian is welcomed back in Russian and keeps no invite.
     await s.world.act((w) => s.world.createPlayer(w, { tgId: '557', name: 'Ann', lang: 'ru', biome: 'snow' }));
     await s.say(557, '/start ref_i0123456789');
     const [m3] = s.sent();
@@ -88,7 +88,7 @@ describe('bot', () => {
     await s.say(1, '/start');
     const [m] = s.sent();
     expect(m.payload.reply_markup).toBeUndefined();
-    expect(m.payload.text).toMatch(/когда игра будет в сети/);
+    expect(m.payload.text).toMatch(/once the game is online/);
   });
 
   it('tells players about caravans, a full storage and the end of the week, once each, never about the chain', async () => {
