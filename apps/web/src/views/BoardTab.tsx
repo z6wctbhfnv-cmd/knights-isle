@@ -45,7 +45,7 @@ export function BoardTab({ game, state, speak }: { game: Game; state: State; spe
   return (
     <div className="page">
       <section className="card">
-        <h3>{t('board.mine')}</h3>
+        <h3><i className="h-ico">🎈</i>{t('board.mine')}</h3>
         {harbor === 0 ? (
           <p className="muted">{t('board.noHarbor')}</p>
         ) : (
@@ -79,7 +79,7 @@ export function BoardTab({ game, state, speak }: { game: Game; state: State; spe
       </section>
 
       <section className="card">
-        <h3>{t('board.requests')}</h3>
+        <h3><i className="h-ico">🤝</i>{t('board.requests')}</h3>
         <p className="muted">{t('board.reward')}</p>
         {board.length === 0 && <p className="muted">{t('board.noRequests')}</p>}
         {board.map((rq) => {
@@ -102,7 +102,7 @@ export function BoardTab({ game, state, speak }: { game: Game; state: State; spe
       </section>
 
       <section className="card">
-        <h3>{t('board.ask')}</h3>
+        <h3><i className="h-ico">📯</i>{t('board.ask')}</h3>
         <p className="muted">{t('board.askHint')}</p>
         {mine.map((rq) => (
           <div key={rq.id} className="row request">
@@ -130,7 +130,7 @@ export function BoardTab({ game, state, speak }: { game: Game; state: State; spe
       </section>
 
       <section className="card">
-        <h3>{t('trader.title')}</h3>
+        <h3><i className="h-ico">🧳</i>{t('trader.title')}</h3>
         <p className="muted">{t('trader.hint')}</p>
         {RARE.map((r) => {
           const q = state.trader[r];

@@ -1,5 +1,5 @@
 import { Hono, type Context } from 'hono';
-import { GameError, type Biome, type Building, type Producer, type Rare, type Res } from '@isle/core';
+import { GameError, claimDaily, type Biome, type Building, type Producer, type Rare, type Res } from '@isle/core';
 import { verifyInitData, type TgUser } from './auth.ts';
 import type { Config } from './config.ts';
 import { all } from './db.ts';
@@ -76,6 +76,7 @@ export function createApp(world: World, cfg: Config, hooks: { processChain?: () 
     return { level, cost };
   }));
   app.post('/api/knight/talk', play((ctx, p) => world.talk(ctx, p)));
+  app.post('/api/daily', play(async (ctx, p) => claimDaily(p.island, ctx.now)));
   app.post('/api/tutorial', play(async (_ctx, p, i) => {
     p.island.tutorial = Math.max(p.island.tutorial, Math.min(99, Number(i.step) || 0));
   }));

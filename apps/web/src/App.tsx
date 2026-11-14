@@ -94,7 +94,7 @@ export function App() {
       </header>
 
       <main className="view">
-        {tab === 'island' && <IslandTab game={game} state={state} speech={speech} speak={speak} goBoard={() => pick('board')} />}
+        {tab === 'island' && <IslandTab game={game} state={state} speech={speech} speak={speak} goBoard={() => pick('board')} goQuests={() => pick('quests')} />}
         {tab === 'board' && <BoardTab game={game} state={state} speak={speak} />}
         {tab === 'hunt' && <HuntTab game={game} state={state} speak={speak} />}
         {tab === 'world' && <WorldTab game={game} state={state} />}
@@ -103,7 +103,7 @@ export function App() {
 
       <nav className="tabs">
         {TABS.map((id) => {
-          const dot = (id === 'board' && state.caravans.some((c) => c.status === 'travel')) || (id === 'quests' && state.island.quests.done.length < 6 && false);
+          const dot = (id === 'board' && state.caravans.some((c) => c.status === 'travel')) || (id === 'quests' && state.daily.available) || (id === 'hunt' && state.hunt.left > 0 && state.island.hunt.digs === 0);
           return (
             <button key={id} className={`tab ${tab === id ? 'on' : ''}`} onClick={() => pick(id)}>
               <TabIcon name={id} />

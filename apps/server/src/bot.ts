@@ -38,6 +38,7 @@ const TEXT = {
   level: ['⭐ Knight level {level}!', '⭐ Уровень рыцаря {level}!'],
   epoch_closed: ['📜 The week is over and the points are counted. A new week has begun.', '📜 Неделя закончилась, очки подсчитаны. Началась новая неделя.'],
   storage_full: ['📦 Your storage is full and the buildings have stopped. Come and collect.', '📦 Склад полон, здания остановились. Загляни собрать.'],
+  daily_ready: ['🎁 Your daily gift is waiting: day {step} of 7.', '🎁 Тебя ждёт подарок дня: день {step} из 7.'],
   week_ending: ['⏳ The week ends soon. You have {points} points this week.', '⏳ Неделя скоро закончится. У тебя {points} очков за неделю.'],
 } satisfies Record<string, [string, string]>;
 
@@ -64,6 +65,7 @@ export function noticeText(n: Notice): string {
     }
     if (kind === 'epoch_closed') lines.push(t(n.lang, 'epoch_closed'));
     if (kind === 'storage_full') lines.push(t(n.lang, 'storage_full'));
+    if (kind === 'daily_ready') lines.push(t(n.lang, 'daily_ready', { step: data.step }));
     if (kind === 'week_ending') lines.push(t(n.lang, 'week_ending', { points: data.points }));
   }
   return lines.join('\n');

@@ -5,3 +5,4 @@ export * from './rewards.ts';
 export * from './hunt.ts';
 export * from './trader.ts';
 export * from './rng.ts';
+export * from './daily.ts';

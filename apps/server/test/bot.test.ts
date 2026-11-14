@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { GrammyError } from 'grammy';
 import { describe, expect, it } from 'vitest';
-import { EPOCH, HOUR } from '@isle/core';
+import { DAY, EPOCH, HOUR, claimDaily } from '@isle/core';
 import { createBot } from '../src/bot.ts';
 import { config as base } from '../src/config.ts';
 import { Db, getMeta, setMeta } from '../src/db.ts';
@@ -161,6 +161,25 @@ describe('bot', () => {
     s.reset();
     expect(await s.notify()).toBe(0);
     expect(s.calls).toEqual([]);
+  });
+
+  it('reminds about the daily gift once a day, only to players who took one before', async () => {
+    const s = await setup();
+    await s.world.act((w) => s.world.createPlayer(w, { tgId: '5', name: 'Ann', lang: 'ru', biome: 'snow' }));
+    await s.world.act((w) => s.world.createPlayer(w, { tgId: '6', name: 'Bob', lang: 'en', biome: 'snow' }));
+    await s.world.act(async (w) => { const p = (await s.world.byTg(w, '5'))!; claimDaily(p.island, w.now); });
+    const clock = await s.world.db.write((tx) => getMeta<any>(tx, 'clock'));
+    const now = await s.world.act(async (w) => w.now);
+    await s.skip(Math.ceil((now + 1) / DAY) * DAY - now + HOUR); // one hour into the next day
+    await s.notify();
+    const msgs = s.sent();
+    const gift = msgs.filter((m) => /подарок дня|daily gift/.test(m.payload.text));
+    expect(gift.map((m) => m.payload.chat_id)).toEqual(['5']);
+    expect(gift[0].payload.text).toMatch(/день 2 из 7/);
+    await s.skip(HOUR);
+    await s.notify();
+    expect(s.sent().filter((m) => /подарок дня/.test(m.payload.text))).toEqual([]);
+    void clock;
   });
 
   it('keeps reminders quiet while the time machine runs fast', async () => {

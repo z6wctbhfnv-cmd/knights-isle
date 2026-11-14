@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import {
   ARCHIPELAGO_MAX, BIOMES, BUILDINGS, DAY, EPOCH, EPOCHS_PER_SEASON, GameError, HOUR, MAX_OPEN_REQUESTS, PRODUCERS, RARE, RARE_OF,
-  storageHours,
+  storageHours, dailyState,
   REFERRAL_XP, RESOURCES, TRADER_TARGET_STOCK, arrive, buildTree, buy, caravanCapacity, collect, dayOf, dig, digsLeft,
   eligible, huntMap, isRare, islandLevel, newIsland, questProgress, quote, sell, sendCaravan, splitPool, touch, upgrade,
   type Biome, type Building, type Caravan, type Island, type PointEvent, type Producer, type Rare, type Res, type Stock,
@@ -9,7 +9,7 @@ import {
 import type { Config } from './config.ts';
 import { all, getMeta, one, run, setMeta, type Db, type Tx } from './db.ts';
 
-export type NoticeKind = 'caravan_in' | 'caravan_back' | 'epoch_closed' | 'storage_full' | 'week_ending';
+export type NoticeKind = 'caravan_in' | 'caravan_back' | 'epoch_closed' | 'storage_full' | 'week_ending' | 'daily_ready';
 export interface Notice { playerId: string; tgId: string; lang: 'en' | 'ru'; items: { kind: NoticeKind; data: Record<string, any> }[] }
 
 export interface Player {
@@ -380,7 +380,7 @@ export class World {
     const rows = await all(ctx.tx, 'SELECT id, name, npc, island, likes, archipelago_id FROM players WHERE id != ? ORDER BY npc ASC, likes DESC, created_at DESC LIMIT 40', [p.id]);
     return rows.map((r) => {
       const isl = JSON.parse(r.island as string) as Island;
-      return { id: r.id, name: r.name, npc: Number(r.npc) === 1, biome: isl.biome, level: islandLevel(isl), likes: Number(r.likes), sameArchipelago: !!p.archipelagoId && r.archipelago_id === p.archipelagoId };
+      return { id: r.id, name: r.name, npc: Number(r.npc) === 1, biome: isl.biome, levels: isl.levels, level: islandLevel(isl), likes: Number(r.likes), sameArchipelago: !!p.archipelagoId && r.archipelago_id === p.archipelagoId };
     });
   }
 
@@ -564,6 +564,7 @@ export class World {
         eligible: eligible({ activeDays: p.island.activeDays, islandLevel: islandLevel(p.island) }),
       },
       island: p.island,
+      daily: dailyState(p.island, ctx.now),
       hunt: { left: digsLeft(p.island, ctx.now), hits: map.filter((t) => p.island.hunt.opened.includes(t.tile)).map((t) => ({ tile: t.tile, res: t.res, amount: t.amount, egg: t.egg })) },
       caravans,
       names,
@@ -587,7 +588,7 @@ export class World {
       if (!n) byPlayer.set(r.id as string, (n = { playerId: r.id as string, tgId: r.tg_id as string, lang: r.lang === 'ru' ? 'ru' : 'en', items: [] }));
       return n;
     };
-    const flags = (r: Record<string, unknown>) => JSON.parse(r.notified as string) as { full?: number; weekWarn?: number; blocked?: boolean };
+    const flags = (r: Record<string, unknown>) => JSON.parse(r.notified as string) as { full?: number; weekWarn?: number; dailyRemind?: number; blocked?: boolean };
 
     const top = await one<{ id: number | null }>(ctx.tx, 'SELECT MAX(id) AS id FROM events WHERE pushed = 0');
     if (top?.id) {
@@ -618,6 +619,13 @@ export class World {
           const pts = await one<{ n: number }>(ctx.tx, 'SELECT COALESCE(SUM(amount), 0) AS n FROM points WHERE player_id = ? AND epoch = ?', [r.id as string, ctx.epoch]);
           if (Number(pts?.n ?? 0) > 0) notice(r).items.push({ kind: 'week_ending', data: { points: Number(pts!.n) } });
           f.weekWarn = ctx.epoch;
+          changed = true;
+        }
+        // The daily gift: only for players who have taken one before, once a day.
+        const daily = dailyState(isl, ctx.now);
+        if (isl.daily && daily.available && f.dailyRemind !== dayOf(ctx.now)) {
+          notice(r).items.push({ kind: 'daily_ready', data: { step: daily.step } });
+          f.dailyRemind = dayOf(ctx.now);
           changed = true;
         }
         if (changed) await run(ctx.tx, 'UPDATE players SET notified = ? WHERE id = ?', [JSON.stringify(f), r.id as string]);

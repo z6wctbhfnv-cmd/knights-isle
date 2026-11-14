@@ -45,7 +45,7 @@ Every game action is queued and sent to the chain in order by a background proce
 
 ## A path for judges
 
-1. **Start.** Open the bot, press *Open my island*, pick a biome. Chan the narrator suggests the first steps.
+1. **Start.** Open the bot, press *Open my island*, pick a biome. Chan the narrator suggests the first steps, and the daily gift pops up: a 7-day calendar with a chest on day 7 (resources only, no season points, so logging in alone cannot farm the pool).
 2. **Build.** Collect what the buildings made, build the Research Lab, then a House (it makes your biome's rare resource) and the Sky Harbor.
 3. **Help a neighbour.** In *Caravans*, a resident asks for your rare resource: press *Send*. Half an hour of game time later your knight is back with a reward. On `/rewards`, *What the game does on chain* shows the transfers player → knight → neighbour with explorer links.
 4. **Ask for help.** Post a request for a resource you don't make. A resident's knight brings it.

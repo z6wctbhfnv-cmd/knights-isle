@@ -361,3 +361,28 @@ describe('merkle format shared with contracts/rewards-pool', () => {
     }
   });
 });
+
+describe('daily reward', async () => {
+  const { claimDaily, dailyReward, dailyState } = await import('../src/daily.ts');
+  it('walks a 7-day calendar, once per day, and starts over after a missed day or day 7', () => {
+    const i = newIsland('snow', T0);
+    expect(dailyState(i, T0)).toEqual({ available: true, step: 1, claimedToday: false });
+    expect(claimDaily(i, T0)).toEqual({ step: 1, reward: { credits: 60 } });
+    expect(i.res.credits).toBe(210);
+    expect(() => claimDaily(i, T0 + HOUR)).toThrow(/already/);
+    expect(dailyState(i, T0 + HOUR)).toMatchObject({ available: false, claimedToday: true });
+    const steps = [1, 2, 3, 4, 5, 6].map((d) => claimDaily(i, T0 + d * DAY).step);
+    expect(steps).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(claimDaily(i, T0 + 7 * DAY).step).toBe(1);
+    expect(claimDaily(i, T0 + 9 * DAY).step).toBe(1);
+  });
+
+  it('pays the chest on day 7 with every foreign rare, grows with the island, gives no points', () => {
+    const i = newIsland('forest', T0);
+    expect(dailyReward(i, 7)).toEqual({ credits: 300, materials: 200, ice: 6, fruit: 6, glass: 6 });
+    expect(dailyReward(i, 5)).toEqual({ ice: 3, fruit: 3, glass: 3 });
+    for (const b of BUILDINGS) i.levels[b] = 4;
+    expect(dailyReward(i, 1)).toEqual({ credits: 300 });
+    expect(Object.keys(claimDaily(i, T0))).toEqual(['step', 'reward']);
+  });
+});

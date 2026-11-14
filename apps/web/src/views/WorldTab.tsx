@@ -56,10 +56,11 @@ export function WorldTab({ game, state }: { game: Game; state: State }) {
   return (
     <div className="page">
       <section className="card">
-        <h3>{t('world.islands')}</h3>
+        <h3><i className="h-ico">🏝️</i>{t('world.islands')}</h3>
         <div className="islands">
           {(islands ?? []).map((i) => (
             <button key={i.id} className={`island-card biome-${i.biome}`} onClick={() => void open(i.id)}>
+              <div className="thumb"><IslandArt biome={i.biome} levels={i.levels} balloon={false} /></div>
               <b>{i.name}</b>
               <small>{biomeName(lang, i.biome)} · {t('lv')} {i.level}</small>
               <small>♥ {i.likes}{i.npc ? ` · ${t('resident')}` : ''}{i.sameArchipelago ? ' · ★' : ''}</small>
@@ -69,7 +70,7 @@ export function WorldTab({ game, state }: { game: Game; state: State }) {
       </section>
 
       <section className="card">
-        <h3>{t('world.arch')}{mine ? `: ${mine.name}` : ''}</h3>
+        <h3><i className="h-ico">⚓</i>{t('world.arch')}{mine ? `: ${mine.name}` : ''}</h3>
         <p className="muted">{t('world.archHint')}</p>
         {(top?.archipelagos ?? []).map((a, i) => (
           <div key={a.id} className="row">
@@ -90,7 +91,7 @@ export function WorldTab({ game, state }: { game: Game; state: State }) {
       </section>
 
       <section className="card">
-        <h3>{t('world.top')}</h3>
+        <h3><i className="h-ico">🏆</i>{t('world.top')}</h3>
         {top && top.players.length === 0 && <p className="muted">{t('world.noTop')}</p>}
         {(top?.players ?? []).map((p, i) => (
           <div key={p.id} className={`row ${p.id === state.me.id ? 'me' : ''}`}>
@@ -101,7 +102,7 @@ export function WorldTab({ game, state }: { game: Game; state: State }) {
       </section>
 
       <section className="card">
-        <h3>{t('world.invite')}</h3>
+        <h3><i className="h-ico">💌</i>{t('world.invite')}</h3>
         <p className="muted">{t('world.inviteHint')}</p>
         <div className="row">
           <span>{t('world.refXp')}: <b>{state.me.refXp}</b></span>

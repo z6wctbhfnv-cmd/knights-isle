@@ -3,6 +3,7 @@ import { api, type State } from '../api.ts';
 import { ResIcon } from '../art/Icons.tsx';
 import { duration, makeT, questName } from '../i18n.ts';
 import { useTick, type Game } from '../store.ts';
+import { DailyCalendar } from './Daily.tsx';
 
 export function QuestsTab({ game, state }: { game: Game; state: State }) {
   useTick(state.speed > 1 ? 300 : 1000);
@@ -23,9 +24,14 @@ export function QuestsTab({ game, state }: { game: Game; state: State }) {
 
   return (
     <div className="page">
+      <section className="card gift-card">
+        <h3><i className="h-ico">🎁</i>{t('daily.title')}</h3>
+        <DailyCalendar game={game} state={state} />
+      </section>
+
       <section className="card">
         <div className="row">
-          <h3>{t('quests.today')}</h3>
+          <h3><i className="h-ico">✅</i>{t('quests.today')}</h3>
           <span className="pill">🔥 {t('quests.streak', { n: island.streak.days })}</span>
         </div>
         {QUESTS.map((q) => {
@@ -41,7 +47,7 @@ export function QuestsTab({ game, state }: { game: Game; state: State }) {
       </section>
 
       <section className="card">
-        <h3>{t('quests.week', { w: epoch.week, s: epoch.season })}</h3>
+        <h3><i className="h-ico">📅</i>{t('quests.week', { w: epoch.week, s: epoch.season })}</h3>
         <div className="stats">
           <div><b>{me.points}</b><small>{t('quests.points')}</small></div>
           <div><b>{duration(lang, (epoch.endsAt - now) / state.speed)}</b><small>{t('quests.ends')}</small></div>
@@ -53,7 +59,7 @@ export function QuestsTab({ game, state }: { game: Game; state: State }) {
 
       {game.demo && (
         <section className="card demo">
-          <h3>{t('demo.title')}</h3>
+          <h3><i className="h-ico">⏳</i>{t('demo.title')}</h3>
           <p className="muted">{t('demo.hint')}</p>
           <div className="seg">
             {([[1, 'demo.x1'], [60, 'demo.x60'], [10080, 'demo.week']] as const).map(([n, key]) => (

@@ -29,7 +29,7 @@ export function HuntTab({ game, state, speak }: { game: Game; state: State; spea
   return (
     <div className="page">
       <section className="card">
-        <h3>{t('hunt.title')}</h3>
+        <h3><i className="h-ico">🗺️</i>{t('hunt.title')}</h3>
         <p className="muted">{t('hunt.left', { n: hunt.left })}</p>
         <div className={`hunt-grid biome-${island.biome}`} style={{ gridTemplateColumns: `repeat(${HUNT_GRID}, 1fr)` }}>
           {Array.from({ length: HUNT_TILES }, (_, tile) => {
@@ -46,7 +46,7 @@ export function HuntTab({ game, state, speak }: { game: Game; state: State; spea
       </section>
 
       <section className="card">
-        <h3>{t('hunt.shelf')} · {island.eggs.length}/{EGGS.length}</h3>
+        <h3><i className="h-ico">🏺</i>{t('hunt.shelf')} · {island.eggs.length}/{EGGS.length}</h3>
         <div className="shelf">
           {EGGS.map((e) => {
             const found = island.eggs.includes(e);

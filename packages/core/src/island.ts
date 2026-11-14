@@ -27,6 +27,8 @@ export interface Island {
   eggs: Egg[];
   reputation: number;
   tutorial: number;
+  /** Daily reward calendar; absent on islands created before it existed. */
+  daily?: { lastDay: number; step: number };
 }
 
 export interface PointEvent { kind: 'upgrade' | 'delivery' | 'quest' | 'streak'; amount: number; note?: string }

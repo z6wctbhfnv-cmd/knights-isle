@@ -8,7 +8,8 @@ import { tg, type State } from '../api.ts';
 import { ResIcon } from '../art/Icons.tsx';
 import { IslandArt } from '../art/Island.tsx';
 import { Chan, Knight } from '../art/Knight.tsx';
-import { buildingAbout, buildingName, knightLine, makeT, num, resName, type Lang, type T } from '../i18n.ts';
+import { buildingAbout, buildingName, duration, knightLine, makeT, num, resName, type Lang, type T } from '../i18n.ts';
+import { DailyModal, Floaters } from './Daily.tsx';
 import { useTick, type Game } from '../store.ts';
 
 const isProducer = (b: Building): b is Producer => (PRODUCERS as readonly string[]).includes(b);
@@ -39,13 +40,29 @@ function effect(t: T, lang: Lang, island: Island, b: Building, level: number): R
   return t('fx.harbor', { n: caravanCapacity(level), s: caravanSlots(level) });
 }
 
-export function IslandTab({ game, state, speech, speak, goBoard }: { game: Game; state: State; speech: string | null; speak: (s: string) => void; goBoard: () => void }) {
+export function IslandTab({ game, state, speech, speak, goBoard, goQuests }: { game: Game; state: State; speech: string | null; speak: (s: string) => void; goBoard: () => void; goQuests: () => void }) {
   useTick(state.speed > 1 ? 400 : 1000);
   const { lang } = game;
   const t = makeT(lang);
   const { island } = state;
   const now = game.now();
   const [open, setOpen] = useState<Building | null>(null);
+  const [floaters, setFloaters] = useState<{ id: number; reward: Partial<Record<Res, number>> }[]>([]);
+  // The gift pops up by itself once per day and session.
+  const [giftOpen, setGiftOpen] = useState(() => {
+    if (!state.daily.available) return false;
+    const key = `isle-gift-${state.me.id}-${Math.floor(state.now / 86_400_000)}`;
+    try {
+      if (sessionStorage.getItem(key)) return false;
+      sessionStorage.setItem(key, '1');
+    } catch { /* private mode */ }
+    return true;
+  });
+  const float = (reward: Partial<Record<Res, number>>) => {
+    const id = Date.now() + Math.random();
+    setFloaters((f) => [...f, { id, reward }]);
+    window.setTimeout(() => setFloaters((f) => f.filter((x) => x.id !== id)), 1600);
+  };
 
   const ready: Partial<Record<Producer, 'some' | 'full'>> = {};
   let anyReady = false;
@@ -63,11 +80,15 @@ export function IslandTab({ game, state, speech, speak, goBoard }: { game: Game;
   for (const b of BUILDINGS) canUp[b] = upgradeBlock(island, b) === null;
   const away = state.caravans.filter((c) => c.status === 'travel' && c.from === state.me.id).length;
   const balloon = away < caravanSlots(island.levels.harbor);
+  const sumLevels = BUILDINGS.reduce((sum, b) => sum + island.levels[b], 0);
+  const mineTravelling = state.caravans.filter((c) => c.status === 'travel' && (c.from === state.me.id || c.to === state.me.id));
+  const nextArrival = mineTravelling.length ? Math.max(0, Math.min(...mineTravelling.map((c) => c.arriveAt)) - now) : null;
 
   const collect = async (b?: Producer) => {
     const got = await game.act<Partial<Record<Res, number>>>('/collect', b ? { building: b } : {});
     if (got && Object.keys(got).length) {
       tg()?.HapticFeedback?.impactOccurred?.('light');
+      float(got);
       if (Math.random() < 0.4) speak(knightLine(lang, 'collect'));
     }
   };
@@ -92,12 +113,18 @@ export function IslandTab({ game, state, speech, speak, goBoard }: { game: Game;
 
   return (
     <div className="island-tab">
-      <div className="island-head">
-        <div>
+      <div className="player-card">
+        <div className="avatar"><Knight size={34} /></div>
+        <div className="player-main">
           <b>{state.me.name}</b>
-          <span>{t('quests.islandLevel')} {islandLevel(island)} · {t('world.knight')} {knightLevel(island.knight.deliveries)}</span>
+          <div className="lvl-bar"><i style={{ width: `${(sumLevels % 8) / 8 * 100}%` }} /></div>
+          <small>{t('me.island', { n: islandLevel(island) })} · {sumLevels % 8}/8 → {islandLevel(island) + 1}</small>
         </div>
-        {state.speed > 1 && <span className="speed-badge">×{state.speed}</span>}
+        <div className="player-chips">
+          <span className="chip-mini">🛡 {knightLevel(island.knight.deliveries)}</span>
+          <span className="chip-mini">⭐ {state.me.points}</span>
+          {state.speed > 1 && <span className="speed-badge">×{state.speed}</span>}
+        </div>
       </div>
 
       <div className="stage">
@@ -113,6 +140,7 @@ export function IslandTab({ game, state, speech, speak, goBoard }: { game: Game;
           <Knight size={46} />
         </button>
         {speech && <div className="speech">{speech}</div>}
+        <Floaters items={floaters} />
       </div>
 
       {anyReady && (
@@ -121,12 +149,32 @@ export function IslandTab({ game, state, speech, speak, goBoard }: { game: Game;
         </button>
       )}
 
+      <div className="today">
+        <button className={`today-tile ${state.daily.available ? 'hot' : ''}`} onClick={() => setGiftOpen(true)}>
+          <span className="today-icon">🎁</span>
+          <b>{t('today.gift')}</b>
+          <small>{state.daily.available ? t('today.giftReady') : t('today.giftDone')}</small>
+        </button>
+        <button className="today-tile" onClick={goQuests}>
+          <span className="today-icon">📜</span>
+          <b>{t('today.quests')}</b>
+          <small>{island.quests.done.length}/6</small>
+        </button>
+        <button className="today-tile" onClick={goBoard}>
+          <span className="today-icon">🎈</span>
+          <b>{t('today.caravan')}</b>
+          <small>{island.levels.harbor === 0 ? t('today.harbor') : nextArrival !== null ? duration(lang, nextArrival / state.speed) : t('today.caravanIdle')}</small>
+        </button>
+      </div>
+
       {hint && (
         <button className="narrator hint" onClick={island.levels.harbor > 0 ? goBoard : undefined}>
           <Chan size={40} />
           <p>{hint[lang === 'ru' ? 1 : 0]}</p>
         </button>
       )}
+
+      {giftOpen && <DailyModal game={game} state={state} speak={speak} onClose={() => setGiftOpen(false)} />}
 
       {open && (
         <div className="sheet-wrap" onClick={() => setOpen(null)}>

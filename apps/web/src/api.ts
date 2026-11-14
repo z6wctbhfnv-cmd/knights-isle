@@ -9,6 +9,7 @@ export interface State {
   epoch: { index: number; endsAt: number; season: number; week: number };
   me: { id: string; name: string; lang: 'en' | 'ru'; refXp: number; likes: number; points: number; pointsTotal: number; archipelago: { id: string; name: string } | null; eligible: boolean };
   island: Island;
+  daily: { available: boolean; step: number; claimedToday: boolean };
   hunt: { left: number; hits: { tile: number; res: Res; amount: number; egg: Egg | null }[] };
   caravans: Caravan[];
   names: Record<string, string>;
@@ -17,7 +18,7 @@ export interface State {
   events: GameEvent[];
 }
 
-export interface IslandCard { id: string; name: string; npc: boolean; biome: Biome; level: number; likes: number; sameArchipelago: boolean }
+export interface IslandCard { id: string; name: string; npc: boolean; biome: Biome; levels: Record<Building, number>; level: number; likes: number; sameArchipelago: boolean }
 export interface Visit { id: string; name: string; npc: boolean; biome: Biome; levels: Record<Building, number>; level: number; knightDeliveries: number; eggs: number; reputation: number; likes: number; liked: boolean }
 export interface Top { players: { id: string; name: string; biome: Biome; points: number }[]; archipelagos: { id: string; name: string; members: number; points: number }[] }
 
