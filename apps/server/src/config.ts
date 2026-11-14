@@ -1,4 +1,5 @@
-const env = process.env;
+// Empty values (KEY= in .env) count as not set.
+const env = Object.fromEntries(Object.entries(process.env).filter(([, v]) => v !== undefined && v.trim() !== '')) as Record<string, string | undefined>;
 
 export const config = {
   port: Number(env.PORT ?? 4310),

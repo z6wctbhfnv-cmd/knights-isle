@@ -172,7 +172,8 @@ export class Chain {
   }
 }
 
-export function chainFromEnv(env = process.env): Chain | null {
+export function chainFromEnv(raw: Record<string, string | undefined> = process.env): Chain | null {
+  const env = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined && v.trim() !== '')) as Record<string, string | undefined>;
   const { GAME_ACCOUNT, GAME_ACCOUNT_KEY, CHAIN_KEY_SECRET } = env;
   if (!GAME_ACCOUNT || !GAME_ACCOUNT_KEY || !CHAIN_KEY_SECRET) return null;
   return new Chain({

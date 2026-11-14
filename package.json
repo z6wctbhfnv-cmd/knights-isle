@@ -2,13 +2,17 @@
   "name": "knights-isle",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -p packages/core --noEmit && tsc -p apps/server --noEmit && tsc -p apps/web --noEmit",
     "dev:server": "npm run dev -w @isle/server",
     "dev:web": "npm run dev -w @isle/web",
-    "build:web": "npm run build -w @isle/web"
+    "build:web": "npm run build -w @isle/web",
+    "start": "npm run build:web && npm run start -w @isle/server"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

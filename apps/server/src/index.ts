@@ -7,7 +7,7 @@ import { createApp } from './app.ts';
 import { botSecret, createBot } from './bot.ts';
 import { config } from './config.ts';
 import { chainFromEnv, type Chain } from './chain.ts';
-import { Db } from './db.ts';
+import { Db, getMeta, setMeta } from './db.ts';
 import { processOps } from './ops.ts';
 import { World } from './world.ts';
 
@@ -20,6 +20,15 @@ let rewards: Chain | null = null;
 if (config.chain === 'testnet') {
   const chain = chainFromEnv();
   if (!chain) throw new Error('CHAIN=testnet needs GAME_ACCOUNT, GAME_ACCOUNT_KEY and CHAIN_KEY_SECRET');
+  // One world, one chain: the accounts on testnet match exactly one database. Refuse any other,
+  // or a fresh database would mint the residents' and the trader's balances a second time.
+  const world_ = await db.write((tx) => getMeta<string>(tx, 'chain_world'));
+  if (world_ !== chain.cfg.gameAccount) {
+    if (process.env.CHAIN_NEW_WORLD !== '1') {
+      throw new Error(`CHAIN=testnet: this database is not the live world of ${chain.cfg.gameAccount}. Use the world database (DATABASE_URL=file:data/testnet.db), run with CHAIN=sim, or set CHAIN_NEW_WORLD=1 to start a new world on a new game account.`);
+    }
+    await db.write((tx) => setMeta(tx, 'chain_world', chain.cfg.gameAccount));
+  }
   rewards = chain;
   processChain = () => processOps(db, chain);
   if (process.env.CHAIN_LOOP !== '0') {
