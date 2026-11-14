@@ -1,0 +1,26 @@
+# Run from the deploy/ folder:  docker compose up -d --build
+# Needs ../.env (secrets, never committed) and ../apps/server/data/testnet.db (the live game world).
+services:
+  isle:
+    build:
+      context: ..
+      args:
+        VITE_BOT_USERNAME: ${BOT_USERNAME:-}
+    env_file: ../.env
+    environment:
+      DATABASE_URL: file:data/testnet.db
+    volumes:
+      - ../apps/server/data:/app/apps/server/data
+    restart: unless-stopped
+  caddy:
+    image: caddy:2
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env, e.g. isle.example.com}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on: [isle]
+    restart: unless-stopped
+volumes:
+  caddy-data:

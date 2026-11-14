@@ -1,95 +1,95 @@
-# Разведка конкурентов — NEAR Hackathon (снимок 2026-11-13)
+# Competitor scouting — NEAR Hackathon (snapshot 2026-11-13)
 
-Источник: `nearhackathon.com/api/projects` (782 проекта, было 494 на 11.11) + тексты демо-постов в X.
-По трекам: **games 69**, **swarms 84**, nfts 68. Игр стало вдвое больше за 2 дня.
+Source: `nearhackathon.com/api/projects` (782 projects, was 494 on 11.11) + the demo post texts on X.
+By track: **games 69**, **swarms 84**, nfts 68. The number of games has doubled in 2 days.
 
-## 1. Главный вывод
+## 1. Main conclusion
 
-**Рынок с AI-торговцами, у которых свой кошелёк и динамические цены, — переполнен.** Это делают ~15 команд:
+**The market of AI traders with their own wallet and dynamic prices is overcrowded.** About 15 teams do it:
 Nims, Meridian, Bazaar Sovereign, Ashes of the Ninth Heaven, Capybazaar, Hearthmarket, Squeek Market, DeepSea Hunter, DiveMarket, Farmverse, Buddies Blitz, Copper Acorn, Worldo, Merchants of NEAR, Lantern Caravan, Coop Tycoon, Lunearcy.
-→ Делать «ещё один базар с AI-торговцами» = раствориться. Можно взять механику, но **не как главную фишку**.
+→ Making "one more bazaar with AI traders" = dissolving in the crowd. We can take the mechanic, but **not as the main feature**.
 
-**Свободные ниши (никто не закрыл):**
-| Ниша | Кто рядом | Насколько занято |
+**Free niches (nobody has closed them):**
+| Niche | Who is nearby | How occupied |
 |---|---|---|
-| Игра, живущая **в Telegram** (бот + Mini App) | NEAR Saboteur (у них «ещё и TG-бот»), Near Legion (NFT-стейкинг в TG, трек nfts) | почти пусто |
-| **Idle/cozy остров** — строишь своё, растёт оффлайн | Lunearcy (уютный драконий приют), Farmverse (ферма) | пусто по жанру |
-| **Личный AI-компаньон с памятью**, который живёт у тебя | Petri (AI-питомец NFT платит за свой «мозг»), NEARlyHuman (AI-петух) | слабо |
-| Соц-механики через **группы/чаты Telegram** (гости, рейды, помощь) | DUEL (споры в групповом чате) | пусто |
-| **Реальные игроки уже есть** | Yupland Heroes (600+ игроков, 66K холдеров DARAI) | 1 проект |
+| A game that lives **in Telegram** (bot + Mini App) | NEAR Saboteur (they have "also a TG bot"), Near Legion (NFT staking in TG, track nfts) | almost empty |
+| **Idle/cozy island** — you build your own, it grows offline | Lunearcy (a cozy dragon shelter), Farmverse (a farm) | empty by genre |
+| **A personal AI companion with memory** that lives with you | Petri (an AI pet NFT pays for its own "brain"), NEARlyHuman (an AI rooster) | weak |
+| Social mechanics through **Telegram groups/chats** (visits, raids, help) | DUEL (disputes in a group chat) | empty |
+| **Real players already exist** | Yupland Heroes (600+ players, 66K DARAI holders) | 1 project |
 
-## 2. Топ по вниманию (лайки / просмотры)
+## 2. Top by attention (likes / views)
 
-| Проект | ♥ / 👁 | Суть | Что взять |
+| Project | ♥ / 👁 | What it is | What to take |
 |---|---|---|---|
-| Merchants of NEAR | 186 / 1.3K | торговая цивилизация, 10 AI-торговцев, караваны, гильдии, бизнес = on-chain акт | бизнес-здание как передаваемый актив; soulbound-бейджи достижений |
-| Crownfall | 140 / 3.9K | 3D, 8 домов с мемкоинами, вход в игру сжигает монету, сезон → призовой пул | **сезон + призовой пул победившей стороне**; вход по Google, аккаунт создаётся сам |
-| KEYFALL | 110 / 2.1K | мемкоин-игра, рейды на «красные мешки», постквантовые ключи | сюжетный крючок, понятный за 1 фразу |
-| DUEL | 73 / 1.3K | споры с друзьями, эскроу, голосование в групповом чате | **механика групп-чата** — родная для TG |
-| Yupland Heroes | 68 / 1.2K | фэнтези-мир, «сначала герой, крипта потом», 600+ игроков, match-3 | «играй сначала, кошелёк — по желанию»; реальные цифры игроков в питче |
-| Crucible | 66 / 2.2K | обмани AI-охранника за 3 сообщения → контракт платит 0.5 NEAR | **короткий AI-челлендж с выплатой** — отличная мини-игра |
-| Hangry Mochi | 53 / 31K | мемкоин «голодает», сжигай чтобы кормить | вирусность «живого» существа, которое надо кормить |
-| CT Life | 53 / 1.6K | «Sims для крипты» | позиционирование одной фразой |
-| DiveMarket | 37 / 1.4K | рыбалка, у каждой рыбы реальный supply и цена | — |
-| Nims | 32 / 1.8K | 8 торговцев-агентов, торг в характере, **замечают, что ты их стравливаешь**; совет игроков+торговцев на Sputnik DAO | эмерджентное поведение агентов с памятью; голосование, меняющее экономику завтра |
-| Feral | 29 / 840 | рой AI-существ, каждое = NEAR-аккаунт, тратит MUNCH на «мысли», размножается, умирает в камень | **агент платит за собственный инференс**; потомки = новые аккаунты; Chain Signatures |
+| Merchants of NEAR | 186 / 1.3K | a trading civilization, 10 AI traders, caravans, guilds, a business = an on-chain asset | a business building as a transferable asset; soulbound achievement badges |
+| Crownfall | 140 / 3.9K | 3D, 8 houses with memecoins, entering the game burns a coin, season → prize pool | **season + a prize pool for the winning side**; Google login, the account is created by itself |
+| KEYFALL | 110 / 2.1K | a memecoin game, raids on "red bags", post-quantum keys | a story hook clear in 1 phrase |
+| DUEL | 73 / 1.3K | disputes with friends, escrow, voting in a group chat | **group chat mechanic** — native to TG |
+| Yupland Heroes | 68 / 1.2K | a fantasy world, "hero first, crypto later", 600+ players, match-3 | "play first, wallet optional"; real player numbers in the pitch |
+| Crucible | 66 / 2.2K | trick an AI guard in 3 messages → the contract pays 0.5 NEAR | **a short AI challenge with a payout** — a great mini-game |
+| Hangry Mochi | 53 / 31K | a memecoin "starves", burn to feed it | the virality of a "living" creature that must be fed |
+| CT Life | 53 / 1.6K | "Sims for crypto" | positioning in one phrase |
+| DiveMarket | 37 / 1.4K | fishing, every fish has a real supply and price | — |
+| Nims | 32 / 1.8K | 8 trader agents, bargaining in character, **they notice that you play them against each other**; a council of players+traders on Sputnik DAO | emergent behavior of agents with memory; a vote that changes the economy tomorrow |
+| Feral | 29 / 840 | a swarm of AI creatures, each = a NEAR account, spends MUNCH on "thoughts", breeds, dies into stone | **an agent pays for its own inference**; offspring = new accounts; Chain Signatures |
 
-## 3. Повторяющиеся технические «нормы» (судьи уже видят их везде — без них мы ниже планки)
+## 3. Recurring technical "norms" (judges already see them everywhere — without them we are below the bar)
 
-- **Без кошелька на входе**: Google/email → реальный NEAR-аккаунт (NEAR Auth / relayer), без попапов (NEP-366 meta-tx / function-call keys). Есть у Crownfall, Worldo, Lunearcy, Nims, Farmverse, Nearverse.
-- **Предметы = NEP-245** в одном контракте (Nims, Worldo, Lunearcy, Squeek).
-- **NPC с собственным NEAR-аккаунтом и ограниченным ключом** (Meridian: ключ на 3 метода; Hearthmarket: «лимиты, которые AI не может нарушить»).
-- **NEAR AI Cloud в TEE** + проверка подписи (Petri, Realsies, Bluffalo).
-- **Ссылка на код + живое демо** в посте — почти у всех сильных.
-- Гильдии = **Sputnik DAO** (Meridian, Nims).
-- Выплаты NEAR через **NEAR Intents** (NEAR Saboteur: топ-3 недели платятся на mainnet).
+- **No wallet at entry**: Google/email → a real NEAR account (NEAR Auth / relayer), no popups (NEP-366 meta-tx / function-call keys). Crownfall, Worldo, Lunearcy, Nims, Farmverse, Nearverse have it.
+- **Items = NEP-245** in one contract (Nims, Worldo, Lunearcy, Squeek).
+- **NPCs with their own NEAR account and a limited key** (Meridian: a key for 3 methods; Hearthmarket: "limits the AI cannot break").
+- **NEAR AI Cloud in a TEE** + signature check (Petri, Realsies, Bluffalo).
+- **A code link + a live demo** in the post — almost all strong ones have it.
+- Guilds = **Sputnik DAO** (Meridian, Nims).
+- NEAR payouts through **NEAR Intents** (NEAR Saboteur: the weekly top 3 are paid on mainnet).
 
-## 4. Прямые пересечения с нашей идеей
+## 4. Direct overlaps with our idea
 
-| Проект | Пересечение | Как отличаемся |
+| Project | Overlap | How we differ |
 |---|---|---|
-| **NEAR Saboteur** | TG-бот, недельные награды топ-3 в NEAR (mainnet, Intents), рефералы, Play Pass | у них TG — довесок к сайту; у нас игра **целиком в TG**. Их недельные выплаты — прямой референс для нашего claim. |
-| Near Legion (nfts) | NFT + маркет внутри Telegram | они не игра; и **крипта внутри TG** — тот самый риск правила TON, мы его обходим claim-сайтом |
-| Lantern Caravan | караваны + автономные перевозчики | если берём караваны с рыцарем — отличие: TG, острова, личный Buddy |
-| Lunearcy / Farmverse | cozy, «одна полка — чужая продажа двигает твою цену» | у нас свой остров + idle + Buddy; общий рынок можем взять |
-| Petri / NEARlyHuman | AI-существо с балансом | у нас Buddy — житель острова с памятью, а не NFT-тамагочи |
+| **NEAR Saboteur** | TG bot, weekly top-3 rewards in NEAR (mainnet, Intents), referrals, Play Pass | for them TG is an add-on to the site; for us the game is **entirely in TG**. Their weekly payouts are a direct reference for our claim. |
+| Near Legion (nfts) | NFT + market inside Telegram | it is not a game; and **crypto inside TG** is exactly the TON rule risk, we avoid it with the claim site |
+| Lantern Caravan | caravans + autonomous carriers | if we take caravans with a knight — the difference: TG, islands, a personal Buddy |
+| Lunearcy / Farmverse | cozy, "one shelf — another's sale moves your price" | we have our own island + idle + Buddy; we can take the shared market |
+| Petri / NEARlyHuman | an AI creature with a balance | our Buddy is an island resident with memory, not an NFT tamagotchi |
 
-## 5. Фичи-кандидаты «украсть» (на решение)
+## 5. Feature candidates to "steal" (to decide)
 
-1. Вход без кошелька: аккаунт создаётся по Telegram-ID, кошелёк привязывается только для claim. *(норма)*
-2. Сезон 1–2 недели → призовой пул лучшим (Crownfall / NEAR Saboteur).
-3. Buddy платит за собственный инференс из баланса острова (Feral, Petri) — красиво для трека 05.
-4. NPC-агенты с памятью, которые **замечают твои паттерны** (Nims).
-5. Мини-игра «уговори AI» с выплатой из капнутого пула (Crucible, Bouncer).
-6. Голосование игроков, меняющее экономику завтра (Nims / Sputnik DAO).
-7. Общий рынок: продажа другого игрока двигает твою цену (Lunearcy).
-8. Soulbound-бейджи достижений (Merchants of NEAR).
-9. Групповой чат как игровое поле: споры, рейды, помощь соседям (DUEL).
-10. Реальные метрики игроков в питче (Yupland).
-11. Здание/участок = передаваемый актив с историей (Merchants, Capybazaar).
+1. Entry without a wallet: the account is created from the Telegram ID, the wallet is linked only for claim. *(a norm)*
+2. A 1–2 week season → a prize pool for the best (Crownfall / NEAR Saboteur).
+3. The Buddy pays for its own inference from the island balance (Feral, Petri) — nice for track 05.
+4. NPC agents with memory that **notice your patterns** (Nims).
+5. A mini-game "persuade the AI" with a payout from a capped pool (Crucible, Bouncer).
+6. A players' vote that changes the economy tomorrow (Nims / Sputnik DAO).
+7. A shared market: another player's sale moves your price (Lunearcy).
+8. Soulbound achievement badges (Merchants of NEAR).
+9. A group chat as the game field: disputes, raids, helping neighbors (DUEL).
+10. Real player metrics in the pitch (Yupland).
+11. A building/plot = a transferable asset with a history (Merchants, Capybazaar).
 
-## 6. Планка, которую надо перепрыгнуть
+## 6. The bar we have to clear
 
-Код в открытом репо + живое демо + «что реально on-chain» таблицей + путь судьи. Сильнейшие игры (Crownfall, Nims, Merchants) делают всё это; **ни одна не живёт в Telegram и ни одна не idle-строилка с личным AI**. Это наш клин.
+Code in an open repo + a live demo + a "what is really on-chain" table + a judge's path. The strongest games (Crownfall, Nims, Merchants) do all this; **none lives in Telegram and none is an idle builder with a personal AI**. This is our wedge.
 
 ---
 
-# Похожие игры в Telegram (вне хакатона)
+# Similar games in Telegram (outside the hackathon)
 
-| Игра | Механика | Что сработало / провалилось | Берём |
+| Game | Mechanic | What worked / failed | What we take |
 |---|---|---|---|
-| Hamster Kombat (TON) | тап + «доход в час» от карточек-апгрейдов, Daily Combo/Cipher, рефералы | 300M игроков → 41M через месяц после аирдропа: ушла причина играть | доход в час, ежедневный ребус; **не** делать игру вокруг будущего токена |
-| Notcoin | чистый тап | токен пережил игру | — |
-| Catizen | idle-мердж котов, пассивный доход, турниры, затем игровой центр | держит DAU дольше тапалок: коллекция + рост | idle-доход + коллекционирование |
-| HOT Wallet (**NEAR**) | кошелёк-майнер: «склад» заполняется, раз в 2 ч зайди и собери; бустеры; **«деревни»** (кланы, 5% дохода деревне) | NEAR-нативный TG-проект, прецедент | «склад полон — зайди собрать» = наш Storage; **деревни → архипелаги** |
-| EggDrop (Gomble) | соц-челленджи, охота за сокровищами | 2.8M MAU, удержание без токена | охота за сокровищами, челленджи |
-| Blum / Major / Tomarket | ежедневный чекин, задания, лидерборды, сквады | | streak-чекин, сквады |
-| Boinkers / Dig It | пародия на крипто-культуру; копание | | юмор и пасхалки |
+| Hamster Kombat (TON) | tap + "income per hour" from upgrade cards, Daily Combo/Cipher, referrals | 300M players → 41M a month after the airdrop: the reason to play was gone | income per hour, a daily puzzle; **do not** build the game around a future token |
+| Notcoin | pure tap | the token outlived the game | — |
+| Catizen | idle merge of cats, passive income, tournaments, then a game center | holds DAU longer than tappers: collection + growth | idle income + collecting |
+| HOT Wallet (**NEAR**) | a wallet-miner: the "storage" fills up, come in every 2 h and collect; boosters; **"villages"** (clans, 5% of income to the village) | a NEAR-native TG project, a precedent | "storage is full — come collect" = our Storage; **villages → archipelagos** |
+| EggDrop (Gomble) | social challenges, treasure hunt | 2.8M MAU, retention without a token | treasure hunt, challenges |
+| Blum / Major / Tomarket | daily check-in, tasks, leaderboards, squads | | streak check-in, squads |
+| Boinkers / Dig It | a parody of crypto culture; digging | | humor and easter eggs |
 
-**Вывод из TG-рынка:** выживают игры с квестами, социальными механиками и ростом, которые работают **при цене токена = 0**. Идём от этого: награда NEAR — бонус, а не причина играть.
+**Conclusion from the TG market:** the games that survive have quests, social mechanics and growth that work **at a token price = 0**. We start from this: the NEAR reward is a bonus, not the reason to play.
 
-## ⚠️ Правило Telegram (core.telegram.org/bots/blockchain-guidelines) — уточнения
+## ⚠️ Telegram rule (core.telegram.org/bots/blockchain-guidelines) — clarifications
 
-- Касается **Mini Apps и их ботов**. Обычные боты **без Mini App — исключены** из правила.
-- В Mini App запрещено: выпускать/раздавать токены и **NFT не на TON**; подключать кошельки не через TON Connect; **продвигать или ссылаться на платформы с не-TON активами**.
-- Следствие для нас: NFT-зданий на NEAR, переходящих из рук в руки **внутри Mini App**, — это «распространение NFT не на TON». Ссылка на claim-сайт из Mini App — тоже серая зона. Нужен выбор (см. вопросы).
+- It applies to **Mini Apps and their bots**. Ordinary bots **without a Mini App are excluded** from the rule.
+- Forbidden in a Mini App: issuing/distributing tokens and **NFTs not on TON**; connecting wallets not through TON Connect; **promoting or linking to platforms with non-TON assets**.
+- Consequence for us: NFT buildings on NEAR passing from hand to hand **inside the Mini App** are "distribution of NFTs not on TON". A link to the claim site from the Mini App is also a gray zone. We need to choose (see the questions).
