@@ -6,7 +6,7 @@ import { webhookCallback } from 'grammy';
 import { createApp } from './app.ts';
 import { botSecret, createBot } from './bot.ts';
 import { config } from './config.ts';
-import { chainFromEnv } from './chain.ts';
+import { chainFromEnv, type Chain } from './chain.ts';
 import { Db } from './db.ts';
 import { processOps } from './ops.ts';
 import { World } from './world.ts';
@@ -16,9 +16,11 @@ const world = new World(db, config);
 
 // CHAIN=testnet: queued operations go to NEAR. The default (sim) keeps everything local.
 let processChain: (() => Promise<unknown>) | undefined;
+let rewards: Chain | null = null;
 if (config.chain === 'testnet') {
   const chain = chainFromEnv();
   if (!chain) throw new Error('CHAIN=testnet needs GAME_ACCOUNT, GAME_ACCOUNT_KEY and CHAIN_KEY_SECRET');
+  rewards = chain;
   processChain = () => processOps(db, chain);
   if (process.env.CHAIN_LOOP !== '0') {
     const loop = async () => {
@@ -31,7 +33,7 @@ if (config.chain === 'testnet') {
     void loop();
   }
 }
-const app = createApp(world, config, { processChain });
+const app = createApp(world, config, { processChain, rewards });
 
 // The bot: a webhook when the game has a public https address, long polling otherwise (local runs).
 if (config.botToken) {
@@ -58,6 +60,7 @@ if (config.botToken) {
 // In production the same server also hands out the built Mini App.
 const dist = resolve(config.webDist);
 if (existsSync(dist)) {
+  app.get('/rewards', serveStatic({ path: `${config.webDist}/rewards.html` }));
   app.use('/*', serveStatic({ root: config.webDist }));
   app.get('*', serveStatic({ path: `${config.webDist}/index.html` }));
 }

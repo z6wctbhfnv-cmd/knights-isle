@@ -77,6 +77,7 @@ export class Db {
       'ALTER TABLE epochs ADD COLUMN funded INTEGER',
       'ALTER TABLE archipelagos ADD COLUMN dao_status TEXT',
       'ALTER TABLE events ADD COLUMN pushed INTEGER NOT NULL DEFAULT 0',
+      'ALTER TABLE claims ADD COLUMN tx TEXT',
     ]) await client.execute(sql).catch(() => {});
     return new Db(client);
   }

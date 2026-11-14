@@ -69,6 +69,18 @@ A new player picked a Snow island, built, sent ice to a resident's request, aske
 | create_dao | Sputnik DAO kisle-310f8b.sputnikv2.testnet, council if2bec600e1.knights-isle.testnet | [Gs9wXrHmio…](https://testnet.nearblocks.io/txns/Gs9wXrHmioVvus1kJN1aQiUPRDYbrn3zMzxNRXEEv4Ys) |
 | set_epoch_root | epoch 1794576305001 root 2efa82223b8f… total 2000000000000000000000 yocto | [9TmAxA6nPL…](https://testnet.nearblocks.io/txns/9TmAxA6nPLABBjar816JMETSDbnvNBNh5SwoUSM5LpLD) || claim (script) | Treasury leaf of week 1 paid into the archipelago's DAO, +0.002 NEAR | [TyQnAGrC…](https://testnet.nearblocks.io/txns/TyQnAGrC8Y8boWXDwrxKRHBKWRHb5j64J7d8D58g5aE) |
 
+## Rewards site run (14 Nov)
+
+A test player (prepared by `scripts/demo-player.ts`: island level 3, three active days, member of the archipelago) earned a share of week 2. On the rewards page they signed in and claimed it to their own wallet; then the archipelago's share was paid into its DAO.
+
+| Step | Transaction |
+|---|---|
+| Week 2 root: player 0.008 NEAR, treasury 0.002 NEAR | [36pXKuR3…](https://testnet.nearblocks.io/txns/36pXKuR3kD3Cn6XH6mr2dfRunbXrfcaW8e1JmbcTmvNy) |
+| Player claims 0.008 NEAR to `knights-isle-demo.testnet` (meta-transaction signed by the player's game account, relayed by the game) | [3Qmidjh4…](https://testnet.nearblocks.io/txns/3Qmidjh4ki96ESURoGkvx22drZ4Gffc4CdGKuFzEkE1M) |
+| Week 2 treasury share paid into `kisle-310f8b.sputnikv2.testnet` | listed on the rewards page |
+
+`is_claimed` on the pool returns `true` for both leaves; the wallet went from 10.0000 to 10.0080 NEAR, the DAO from 6.0020 to 6.0040 NEAR.
+
 ## Costs measured on testnet
 
 | Action | Cost to the game account |

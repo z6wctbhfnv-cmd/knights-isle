@@ -144,6 +144,28 @@ export class Chain {
     return BigInt((await this.provider.viewAccount({ accountId: this.cfg.gameAccount })).amount);
   }
 
+  // ---- RewardsPort (see rewards.ts) ----
+  /** The leaf owner (a game-held player account) claims to its own wallet; the game account relays and pays gas. */
+  async claimAs(owner: string, chainEpoch: number, amount: string, proof: string[], recipient: string): Promise<string> {
+    const { signedDelegate } = await this.account(owner).createSignedMetaTransaction({
+      receiverId: this.cfg.pool,
+      actions: [actions.functionCall('claim', { epoch: chainEpoch, account_id: owner, amount, proof, recipient }, 60n * TGAS, 0n)],
+    });
+    return txHash(await this.game.relayMetaTransaction(signedDelegate));
+  }
+
+  async claimFor(account: string, chainEpoch: number, amount: string, proof: string[]): Promise<string> {
+    return this.call(this.cfg.pool, 'claim', { epoch: chainEpoch, account_id: account, amount, proof, recipient: null }, 0n, 60n * TGAS);
+  }
+
+  async isClaimed(chainEpoch: number, account: string): Promise<boolean> {
+    return this.view<boolean>(this.cfg.pool, 'is_claimed', { epoch: chainEpoch, account_id: account });
+  }
+
+  async pool(): Promise<{ balance: string; reserved: string; available: string }> {
+    return this.view(this.cfg.pool, 'get_pool');
+  }
+
   async balances(accountId: string, tokens: readonly string[]): Promise<Record<string, number>> {
     const out = await this.view<string[]>(this.cfg.resources, 'mt_batch_balance_of', { account_id: accountId, token_ids: tokens });
     return Object.fromEntries(tokens.map((t, i) => [t, Number(out[i])]));

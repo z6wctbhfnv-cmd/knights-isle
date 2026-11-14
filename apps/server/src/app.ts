@@ -3,11 +3,12 @@ import { GameError, type Biome, type Building, type Producer, type Rare, type Re
 import { verifyInitData, type TgUser } from './auth.ts';
 import type { Config } from './config.ts';
 import { all } from './db.ts';
+import { addRewardsRoutes, type RewardsPort } from './rewards.ts';
 import type { Ctx, Player, World } from './world.ts';
 
 type Env = { Variables: { user: TgUser } };
 
-export function createApp(world: World, cfg: Config, hooks: { processChain?: () => Promise<unknown> } = {}) {
+export function createApp(world: World, cfg: Config, hooks: { processChain?: () => Promise<unknown>; rewards?: RewardsPort | null } = {}) {
   const app = new Hono<Env>();
 
   app.onError((err, c) => {
@@ -124,6 +125,8 @@ export function createApp(world: World, cfg: Config, hooks: { processChain?: () 
       epochs,
     });
   });
+
+  addRewardsRoutes(app, world, cfg, hooks.rewards ?? null);
 
   // ---- demo time machine: lets a judge watch a week pass in a minute ----
   app.post('/api/demo/speed', async (c) => {
