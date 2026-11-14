@@ -1,107 +1,107 @@
-# SPEC — Knight's Isle (TG-игра, NEAR Hackathon)
+# SPEC — Knight's Isle (TG game, NEAR Hackathon)
 
-Рабочее ТЗ для сессии-исполнителя. Решения: [BRIEF.md](BRIEF.md) · Рынок: [COMPETITORS.md](COMPETITORS.md) · Исходный концепт: [docs/Your_Own_Island_Concept.docx](docs/Your_Own_Island_Concept.docx)
+Working spec for the implementing session. Decisions: [BRIEF.md](BRIEF.md) · Market: [COMPETITORS.md](COMPETITORS.md) · Original concept: [docs/Your_Own_Island_Concept.docx](docs/Your_Own_Island_Concept.docx)
 
-## 1. Что делаем — одним абзацем
+## 1. What we are building — one paragraph
 
-Уютная idle-строилка в Telegram: у каждого игрока свой летающий остров одного из 4 биомов. Здания копят ресурсы, пока игрок оффлайн. Своего рыцаря-хранителя (персонаж с шапки, выигранной на прошлом NEAR-хакатоне) игрок отправляет с караванами к соседям: помогает и дарит редкие ресурсы, без которых соседи не прокачаются. Острова объединяются в архипелаги с общей казной. Каждую неделю пул NEAR делится между игроками по очкам, а лучший архипелаг получает приз в казну. **Внутри Telegram блокчейна не видно вообще.** Аккаунты, ресурсы, подарки, казны и выплаты при этом реально живут на NEAR testnet, а награды забирают на отдельном сайте.
+A cozy idle builder in Telegram: every player has their own flying island in one of 4 biomes. Buildings collect resources while the player is offline. The player sends their own guardian knight (the character from the beanie won at the last NEAR hackathon) with caravans to neighbors: he helps and gives rare resources that the neighbors need to level up. Islands join into archipelagos with a shared treasury. Every week a NEAR pool is split between players by points, and the best archipelago gets a prize into its treasury. **Inside Telegram the blockchain is not visible at all.** Accounts, resources, gifts, treasuries and payouts still really live on NEAR testnet, and rewards are claimed on a separate site.
 
-**Треки:** 09 Games With Real Economies · 12 Social Money · 13 Open Innovation.
-**Клин против конкурентов:** из 69 игр хакатона ни одна не живёт в Telegram и ни одна не idle-строилка; рынок AI-торговцев (~15 проектов) обходим стороной.
+**Tracks:** 09 Games With Real Economies · 12 Social Money · 13 Open Innovation.
+**Wedge against competitors:** of the 69 games in the hackathon, none lives in Telegram and none is an idle builder; we avoid the AI-trader market (~15 projects).
 
-## 2. Состав системы
+## 2. System parts
 
-| Часть | Что | Стек |
+| Part | What | Stack |
 |---|---|---|
-| Бот | `/start` (+ `?start=ref_<id>`), открытие Mini App, уведомления | grammY, webhook |
-| Mini App | остров (изометрия), стройка, караваны, доска просьб, архипелаг, задания, Treasure Hunt, гости | React |
-| Бэкенд | состояние игры, idle-тики, очки, анти-сибил, relayer on-chain операций | TypeScript, Vercel + Turso |
-| Контракты | ресурсы NEP-245, пул наград с merkle-claim | Rust, testnet |
-| DAO | казна архипелага | Sputnik DAO (существующий factory) |
-| Сайт наград | вход через Telegram Login → привязка своего кошелька → claim; голосования казны; страница «доказательства» | статичный сайт + бэкенд |
+| Bot | `/start` (+ `?start=ref_<id>`), opens the Mini App, notifications | grammY, webhook |
+| Mini App | island (isometric), building, caravans, request board, archipelago, tasks, Treasure Hunt, visits | React |
+| Backend | game state, idle ticks, points, anti-sybil, relayer for on-chain operations | TypeScript, Vercel + Turso |
+| Contracts | NEP-245 resources, reward pool with merkle claim | Rust, testnet |
+| DAO | archipelago treasury | Sputnik DAO (existing factory) |
+| Rewards site | Telegram Login → link own wallet → claim; treasury votes; "proofs" page | static site + backend |
 
-Правило Telegram (core.telegram.org/bots/blockchain-guidelines): в Mini App и боте **ни слова про NEAR**, нет ссылок на сайт наград и кошельков. Сайт находят через X и README.
+Telegram rule (core.telegram.org/bots/blockchain-guidelines): in the Mini App and the bot **not a word about NEAR**, no links to the rewards site or to wallets. People find the site through X and the README.
 
-## 3. Игровой цикл
+## 3. Game loop
 
-- **Каждые 30 с:** тап «собрать» с полного здания, стройка или апгрейд, реплика рыцаря (по скрипту).
-- **Каждые 5 мин:** отправить караван по доске просьб, выставить свою просьбу, найти клад в Treasure Hunt.
-- **Каждую сессию (5–10 мин):** забрать накопленное, выполнить ежедневные задания, сходить в гости и поставить лайк, проверить архипелаг.
-- **Неделя (эпоха):** чекпоинт очков → выплата из пула → рейтинг архипелагов.
-- **Сезон (4 недели):** тема, финальный приз архипелагу.
+- **Every 30 s:** tap "collect" on a full building, build or upgrade, a knight line (from a script).
+- **Every 5 min:** send a caravan from the request board, post your own request, find a treasure in Treasure Hunt.
+- **Every session (5–10 min):** collect what has built up, do the daily tasks, visit others and leave a like, check the archipelago.
+- **Week (epoch):** points checkpoint → payout from the pool → archipelago ranking.
+- **Season (4 weeks):** a theme, a final prize for the archipelago.
 
-## 4. Контент v1
+## 4. Content v1
 
-- **Биомы (4):** Snow, Tropical, Desert, Forest. Небольшой бонус из docx плюс свой редкий ресурс.
-- **Ресурсы:** базовые Energy, Materials, Credits есть у всех. Редкие: Лёд (Snow), Фрукты (Tropical), Стекло (Desert), Древесина (Forest).
-- **Здания (8 × 10 уровней):** Solar Farm, Factory, Data Center, House, Storage, Research Lab, Entertainment Center, Harbor (порт: караваны и их вместимость). AI Center из docx заменён на Harbor, потому что AI нет. **С уровня 5 апгрейд требует чужих редких ресурсов.**
-- **Storage:** склад ограничен, при заполнении бот пишет «склад полон» (приём HOT).
-- **Задания:** ежедневные из docx и стрик дней.
-- **Мини-игра:** Treasure Hunt — поиск спрятанного на острове. Сюда же NEAR-пасхалки: yoctoNEAR, Nightshade, Doomslug, House of Stake, «Attention Is All You Need».
-- **Гости:** посещение чужих островов, лайки. Лайки очков сезона не дают.
+- **Biomes (4):** Snow, Tropical, Desert, Forest. A small bonus from the docx plus its own rare resource.
+- **Resources:** the basic Energy, Materials, Credits are for everyone. Rare: Ice (Snow), Fruit (Tropical), Glass (Desert), Wood (Forest).
+- **Buildings (8 × 10 levels):** Solar Farm, Factory, Data Center, House, Storage, Research Lab, Entertainment Center, Harbor (port: caravans and their capacity). The AI Center from the docx is replaced by Harbor, because there is no AI. **From level 5 an upgrade needs other players' rare resources.**
+- **Storage:** the storage is limited; when it fills up the bot writes "Your storage is full" (the HOT trick).
+- **Tasks:** the daily ones from the docx and a day streak.
+- **Mini-game:** Treasure Hunt — searching for something hidden on the island. NEAR easter eggs go here too: yoctoNEAR, Nightshade, Doomslug, House of Stake, "Attention Is All You Need".
+- **Visits:** visiting other islands, likes. Likes give no season points.
 
-## 5. Рыцарь
+## 5. Knight
 
-Один на игрока, всегда на острове, работает на скриптах, LLM нет. Реагирует на события шаблонными репликами. Сопровождает караваны: в пути пираты или шторм могут забрать **часть груза**, а уровень рыцаря снижает шанс и размер потери. Растёт в уровне за доставленные караваны. Графику рисуем по фото шапки — [assets/reference/knight-beanie.jpg](assets/reference/knight-beanie.jpg): круглый светло-серый шлем с острым гребнем сверху, тёмно-серые прорези забрала, синее «лицо»-экран с двумя большими чёрными глазами с белыми бликами, по бокам маленькие синие загнутые перья-рожки. Чиби-пропорции, без тела на эмблеме — тело дорисовываем в том же стиле.
+One per player, always on the island, runs on scripts, no LLM. Reacts to events with template lines. Escorts caravans: on the way, pirates or a storm can take **part of the cargo**, and the knight's level lowers the chance and the size of the loss. Levels up for delivered caravans. We draw the art from the photo of the beanie — [assets/reference/knight-beanie.jpg](assets/reference/knight-beanie.jpg): a round light-gray helmet with a sharp crest on top, dark-gray visor slits, a blue screen "face" with two big black eyes with white highlights, small curved blue feather-horns on the sides. Chibi proportions, no body on the emblem — we draw the body in the same style.
 
-**NEARchan** — рассказчица: ведёт обучение и рассказывает новости сезона (CC-BY, ссылка на near-chan.github.io).
+**NEARchan** — the narrator: leads the tutorial and tells the season news (CC-BY, link to near-chan.github.io).
 
-## 6. Караваны и доска просьб (ядро 09 + 12)
+## 6. Caravans and request board (core of 09 + 12)
 
-- Игрок публикует просьбу «нужно 20 льда». Любой игрок отправляет караван с рыцарем.
-- Доставка — **реальный перевод NEP-245 между сабаккаунтами** (relayer, без попапов).
-- Отправитель получает Credits и **репутацию**: она прослеживается on-chain по переводам-подаркам.
-- Повторные караваны одной и той же паре игроков дают убывающие очки.
+- A player posts a request "need 20 ice". Any player sends a caravan with a knight.
+- Delivery is a **real NEP-245 transfer between sub-accounts** (relayer, no popups).
+- The sender gets Credits and **reputation**: it can be traced on-chain through the gift transfers.
+- Repeat caravans to the same pair of players give diminishing points.
 
-## 7. Архипелаги (12 Social)
+## 7. Archipelagos (12 Social)
 
-- Создаются и вступают **внутри игры**. Друг, пришедший по реф-ссылке, сразу попадает в архипелаг пригласившего.
-- Каждый архипелаг — **Sputnik DAO** (`<name>.sputnik-dao.testnet`), игроки — участники.
-- Приз архипелага падает в казну DAO. Малые выплаты участникам по репутации проходят **автоматически**, крупные — голосованием совета на сайте наград.
+- Created and joined **inside the game**. A friend who comes through a ref link goes straight into the inviter's archipelago.
+- Each archipelago is a **Sputnik DAO** (`<name>.sputnik-dao.testnet`), the players are its members.
+- The archipelago prize goes into the DAO treasury. Small payouts to members by reputation go **automatically**, big ones by a council vote on the rewards site.
 
 ## 8. On-chain (testnet)
 
-| Что | Как |
+| What | How |
 |---|---|
-| Аккаунт | бэкенд создаёт `tg<id>.<game>.testnet` при первом входе; игрок кошелёк не видит |
-| Ресурсы | один NEP-245-контракт: 7 fungible-типов, mint при производстве (батчами), transfer при караванах |
-| Эпоха | раз в неделю бэкенд пишет merkle-корень очков в контракт пула |
-| Пул | пополнять может кто угодно (`deposit`); на демо — testnet NEAR команды с faucet |
-| Claim | на сайте: Telegram Login → свой кошелёк → `claim(proof)` |
-| Казна | Sputnik DAO архипелага |
+| Account | the backend creates `tg<id>.<game>.testnet` on first login; the player does not see a wallet |
+| Resources | one NEP-245 contract: 7 fungible types, mint on production (in batches), transfer on caravans |
+| Epoch | once a week the backend writes the merkle root of the points into the pool contract |
+| Pool | anyone can top it up (`deposit`); for the demo — the team's testnet NEAR from the faucet |
+| Claim | on the site: Telegram Login → own wallet → `claim(proof)` |
+| Treasury | the archipelago's Sputnik DAO |
 
-## 9. Очки, награды, анти-сибил
+## 9. Points, rewards, anti-sybil
 
-- **Очки сезона:** рост острова + помощь (доставленные караваны) + задания и стрик.
-- **Выплата эпохи:** пул × доля очков игрока, не больше X% пула на одного игрока. Приз лучшему архипелагу идёт в его DAO.
-- **Допуск к claim:** не меньше N дней в игре и уровень острова не ниже порога.
-- **Рефералы:** XP пригласившему за достижения друга по таблице из docx (за саму регистрацию — ничего).
+- **Season points:** island growth + help (delivered caravans) + tasks and streak.
+- **Epoch payout:** pool × the player's share of points, no more than X% of the pool per player. The prize for the best archipelago goes to its DAO.
+- **Claim eligibility:** at least N days in the game and an island level not below a threshold.
+- **Referrals:** XP to the inviter for the friend's achievements from the docx table (nothing for the registration itself).
 
-## 10. Для судей
+## 10. For judges
 
-- **Ускорение** «неделя за минуту» (требование трека 09): тики, караваны, чекпоинт и выплата на глазах.
-- README: таблица «реально on-chain / симуляция», путь «сделай X — увидишь Y», ссылки на транзакции в explorer, опыт команды (TG-бот на прошлом NEAR-хакатоне).
-- Пост в X: «в прошлый раз сделали TG-бота и выиграли эту шапку — теперь её рыцарь охраняет наши острова».
+- **Acceleration** "a week in a minute" (a requirement of track 09): ticks, caravans, checkpoint and payout in front of their eyes.
+- README: a "really on-chain / simulation" table, a "do X — see Y" path, links to transactions in the explorer, the team's experience (a TG bot at the last NEAR hackathon).
+- X post: "last time we built a TG bot and won this beanie — now its knight guards our islands".
 
-## 11. Организация
+## 11. Organization
 
-- Новый приватный репозиторий на `z6wctbhfnv-cmd`, коллабораторы — команда. Публичным делаем ночью при сдаче.
-- Отдельная заявка, **другой состав команды**, чем у Pilot.
-- Лицензия как в Pilot: MIT для контрактов, Apache-2.0 для остального.
+- A new private repository on `z6wctbhfnv-cmd`, collaborators — the team. We make it public at night on submission.
+- A separate application, **a different team lineup** than Pilot.
+- License as in Pilot: MIT for contracts, Apache-2.0 for the rest.
 
-## 12. Ещё не решено
+## 12. Still open
 
-1. Числа экономики: стоимость и выход зданий по уровням, бонусы биомов, N дней, X% потолка, размер потерь каравана. Исполнитель предлагает таблицу, Александр утверждает.
-2. **Попадание в треки — открытый вопрос.** Заявляем 09 + 12 + 13, но попадание неравное:
+1. Economy numbers: building cost and output by level, biome bonuses, N days, X% cap, caravan loss size. The implementer proposes a table, Alexander approves.
+2. **Fit with the tracks is an open question.** We apply to 09 + 12 + 13, but the fit is uneven:
 
-   | Трек | Что требует трек | Что у нас есть | Чего не хватает / риск | Оценка |
+   | Track | What the track asks for | What we have | What is missing / risk | Rating |
    |---|---|---|---|---|
-   | **09 Games With Real Economies** | экономика = геймплей: NPC с кошельками, рынок игроков, экономика меняется без патча; NEP-245; вход без кошелька; бонус, если чейн не заметен; режим ускорения | ресурсы NEP-245 в одном контракте; подарки = реальные переводы; взаимозависимость биомов; вход по Telegram без кошелька; чейн полностью скрыт; ускорение «неделя за минуту» | нет NPC с кошельками (рыцарь на скриптах, без своего аккаунта) и нет рынка с ценами — главный пример трека. Цены не «живут» | **средне** |
-   | **12 Social Money** | общие бюджеты, программируемые награды, коллективное владение, доступ по репутации — на Sputnik DAO / Trezu, без своей мультисиги | архипелаг = Sputnik DAO с казной; авто-выплаты по репутации, крупные — совет; репутация из on-chain подарков; доска просьб ≈ bounty board | репутация считается бэкендом, а не контрактом; голосование только на сайте; Trezu не используем | **сильно** |
-   | **13 Open Innovation** | идея, которая не влезает в категорию | игра в TG без единого слова о крипте, а под капотом аккаунты, DAO и merkle-claim на NEAR | сам по себе слабый аргумент; добавляется к любой заявке | **как довесок** |
+   | **09 Games With Real Economies** | economy = gameplay: NPCs with wallets, a player market, an economy that changes without a patch; NEP-245; entry without a wallet; a bonus if the chain is not noticeable; acceleration mode | NEP-245 resources in one contract; gifts = real transfers; biome interdependence; Telegram entry without a wallet; chain fully hidden; "a week in a minute" acceleration | no NPCs with wallets (the knight runs on scripts, has no account of his own) and no market with prices — the track's main example. Prices do not "live" | **medium** |
+   | **12 Social Money** | shared budgets, programmable rewards, collective ownership, reputation-based access — on Sputnik DAO / Trezu, no own multisig | archipelago = Sputnik DAO with a treasury; auto-payouts by reputation, big ones by the council; reputation from on-chain gifts; request board ≈ bounty board | reputation is computed by the backend, not by a contract; voting only on the site; we do not use Trezu | **strong** |
+   | **13 Open Innovation** | an idea that does not fit a category | a TG game without a single word about crypto, and under the hood accounts, a DAO and a merkle claim on NEAR | a weak argument on its own; added to any application | **as an extra** |
 
-   **Варианты усилить 09 (решить):**
-   - а) рыцарь получает свой сабаккаунт `knight-<id>` и сам по скрипту везёт груз (NPC с кошельком без LLM);
-   - б) «залётный торговец» — NPC-аккаунт с ценой от запаса и спроса на редкие ресурсы, правила цены в одном файле, причина цены в подсказке;
-   - в) оставить как есть и делать упор на 12 Social.
-   - Риск отдельно: правило Telegram — ресурсы NEP-245 и сабаккаунты в Mini App формально «раздача не-TON активов», даже скрытая.
+   **Options to strengthen 09 (to decide):**
+   - a) the knight gets his own sub-account `knight-<id>` and carries the cargo himself by script (an NPC with a wallet, no LLM);
+   - b) a "wandering trader" — an NPC account with a price based on stock and demand for rare resources, price rules in one file, the reason for the price in a hint;
+   - c) leave as is and put the emphasis on 12 Social.
+   - Separate risk: the Telegram rule — NEP-245 resources and sub-accounts in the Mini App are formally "distribution of non-TON assets", even if hidden.

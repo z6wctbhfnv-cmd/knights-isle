@@ -1,100 +1,100 @@
-# Экономика — черновик на утверждение (2026-11-13)
+# Economy — draft for approval (2026-11-13)
 
-Закрывает открытый пункт «числа экономики» из [SPEC.md](SPEC.md) §12.1. Все числа — предложение исполнителя, ничего не утверждено. Темп проверен простой симуляцией игрока (см. в конце).
+Closes the open item "economy numbers" from [SPEC.md](SPEC.md) §12.1. All numbers are the implementer's proposal, nothing is approved. The pace was checked with a simple player simulation (see the end).
 
-## 1. Два множителя на всю игру
+## 1. Two multipliers for the whole game
 
-- **Выработка** здания на уровне L = база × 1,45^(L−1).
-- **Цена** апгрейда до уровня L = база × 1,9^(L−1).
+- **Output** of a building at level L = base × 1.45^(L−1).
+- **Cost** of an upgrade to level L = base × 1.9^(L−1).
 
-Цена растёт быстрее выработки, поэтому каждый следующий уровень ждать дольше.
+The cost grows faster than the output, so every next level takes longer to wait for.
 
-| Уровень | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| Level | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Выработка × | 1 | 1,45 | 2,1 | 3,05 | 4,4 | 6,4 | 9,3 | 13,5 | 19,5 | 28,3 |
-| Цена × | 1 | 1,9 | 3,6 | 6,9 | 13 | 25 | 47 | 89 | 170 | 323 |
+| Output × | 1 | 1.45 | 2.1 | 3.05 | 4.4 | 6.4 | 9.3 | 13.5 | 19.5 | 28.3 |
+| Cost × | 1 | 1.9 | 3.6 | 6.9 | 13 | 25 | 47 | 89 | 170 | 323 |
 
-## 2. Здания
+## 2. Buildings
 
-| Здание | Что даёт | Уровень 1 в час | Цена уровня 1 (Energy / Materials / Credits) |
+| Building | What it gives | Level 1 per hour | Level 1 cost (Energy / Materials / Credits) |
 |---|---|---|---|
 | Solar Farm | Energy | 60 | 0 / 60 / 40 |
 | Factory | Materials | 40 | 80 / 0 / 50 |
 | Data Center | Credits | 30 | 120 / 100 / 0 |
-| House | редкий ресурс своего биома | 2 | 60 / 80 / 40 |
-| Storage | вместимость склада | см. §3 | 50 / 120 / 30 |
-| Research Lab | потолок уровня остальных зданий = уровень Lab + 1 | — | 150 / 150 / 100 |
-| Entertainment Center | +5% к наградам заданий и Treasure Hunt за уровень | — | 100 / 100 / 120 |
-| Harbor | караваны: груз и число одновременных | см. §5 | 90 / 140 / 80 |
+| House | the rare resource of its biome | 2 | 60 / 80 / 40 |
+| Storage | storage capacity | see §3 | 50 / 120 / 30 |
+| Research Lab | level cap of the other buildings = Lab level + 1 | — | 150 / 150 / 100 |
+| Entertainment Center | +5% to task and Treasure Hunt rewards per level | — | 100 / 100 / 120 |
+| Harbor | caravans: cargo and number at once | see §5 | 90 / 140 / 80 |
 
-Старт: Solar Farm, Factory, Data Center и Storage уже стоят на уровне 1, на счету по 150 каждого базового ресурса. Остальное игрок строит сам.
+Start: Solar Farm, Factory, Data Center and Storage already stand at level 1, and the account holds 150 of each basic resource. The player builds the rest.
 
-**Редкие ресурсы с уровня 5.** Каждый апгрейд требует свой редкий и один чужой:
+**Rare resources from level 5.** Each upgrade needs its own rare resource and one foreign one:
 
-| До уровня | 5 | 6 | 7 | 8 | 9 | 10 |
+| To level | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|
-| Свой редкий | 15 | 24 | 38 | 61 | 98 | 157 |
-| Чужой редкий | 10 | 16 | 26 | 41 | 66 | 105 |
+| Own rare | 15 | 24 | 38 | 61 | 98 | 157 |
+| Foreign rare | 10 | 16 | 26 | 41 | 66 | 105 |
 
-Чужой ресурс чередуется: уровни 5 и 8 — первый соседний биом, 6 и 9 — второй, 7 и 10 — третий. Так каждому нужны все три чужих биома. На одно здание до 10-го уровня уходит 264 чужих редких, на весь остров — 2112.
+The foreign resource rotates: levels 5 and 8 — the first neighboring biome, 6 and 9 — the second, 7 and 10 — the third. So everyone needs all three foreign biomes. One building up to level 10 uses 264 foreign rare resources, the whole island — 2112.
 
-**Уровень острова** = сумма уровней зданий ÷ 8, вниз до целого.
+**Island level** = sum of building levels ÷ 8, rounded down.
 
-## 3. Склад
+## 3. Storage
 
-Склад вмещает выработку за N часов. Дальше здания стоят, бот пишет «склад полон».
+The storage holds the output of N hours. After that the buildings stand still, and the bot writes "Your storage is full".
 
-| Уровень Storage | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| Storage level | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Часов | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 |
+| Hours | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 |
 
-## 4. Бонусы биомов
+## 4. Biome bonuses
 
-| Биом | Бонус | Редкий ресурс |
+| Biome | Bonus | Rare resource |
 |---|---|---|
-| Snow | +10% Credits от Data Center | Лёд |
-| Tropical | +10% к наградам заданий и Treasure Hunt | Фрукты |
-| Desert | +10% Energy от Solar Farm | Стекло |
-| Forest | +10% Materials от Factory | Древесина |
+| Snow | +10% Credits from Data Center | Ice |
+| Tropical | +10% to task and Treasure Hunt rewards | Fruit |
+| Desert | +10% Energy from Solar Farm | Glass |
+| Forest | +10% Materials from Factory | Wood |
 
-## 5. Караваны и рыцарь
+## 5. Caravans and knight
 
-- **Груз** одного каравана: 20 единиц на Harbor 1, ×1,3 за уровень (57 на 5-м, 212 на 10-м).
-- **Одновременно:** 1 караван на Harbor 1–3, 2 на 4–7, 3 на 8–10.
-- **Путь:** 30 минут.
-- **Пираты или шторм:** шанс 25%, теряется 30% груза. Каждый уровень рыцаря снимает 2 п.п. с шанса и 2 п.п. с потери. На 10-м уровне: шанс 7%, потеря 12%.
-- **Уровень рыцаря** — по числу доставок всего: 3, 8, 15, 25, 40, 60, 85, 115, 150.
-- **Награда за доставку по просьбе:** 20 Credits и 1 репутация за доставленную единицу.
-- **Один и тот же получатель за эпоху:** первая доставка 100% очков и репутации, вторая 50%, третья 25%, дальше 0. Сам груз доходит всегда.
+- **Cargo** of one caravan: 20 units at Harbor 1, ×1.3 per level (57 at level 5, 212 at level 10).
+- **At once:** 1 caravan at Harbor 1–3, 2 at 4–7, 3 at 8–10.
+- **Trip:** 30 minutes.
+- **Pirates or storm:** 25% chance, 30% of the cargo is lost. Each knight level takes 2 percentage points off the chance and 2 off the loss. At level 10: chance 7%, loss 12%.
+- **Knight level** — by total number of deliveries: 3, 8, 15, 25, 40, 60, 85, 115, 150.
+- **Reward for a delivery on a request:** 20 Credits and 1 reputation per delivered unit.
+- **The same recipient within an epoch:** the first delivery gives 100% of points and reputation, the second 50%, the third 25%, then 0. The cargo itself always arrives.
 
-## 6. Очки сезона
+## 6. Season points
 
-| За что | Очки |
+| For what | Points |
 |---|---|
-| Апгрейд здания до уровня L | 10 × L (весь остров до 10-го — 4400) |
-| Доставка по просьбе | 2 за единицу, с убыванием из §5 |
-| Ежедневное задание | 5 за каждое, 6 заданий в день |
-| Серия дней | 5 × день серии, не больше 35 в день |
-| Лайки, гости | 0 |
+| Upgrading a building to level L | 10 × L (the whole island to level 10 — 4400) |
+| Delivery on a request | 2 per unit, with the decay from §5 |
+| Daily task | 5 each, 6 tasks a day |
+| Day streak | 5 × streak day, no more than 35 a day |
+| Likes, visits | 0 |
 
-## 7. Награды и защита от ботов
+## 7. Rewards and bot protection
 
-- **Пул эпохи:** 80% игрокам по доле очков, 20% — в казну лучшего архипелага.
-- **Потолок на игрока (X):** 5% пула эпохи. Что не роздано из-за потолка, переходит в следующую эпоху.
-- **Допуск к награде (N):** 3 дня с выполненным заданием и остров не ниже 3-го уровня.
-- **Архипелаг:** до 30 островов, счёт архипелага = сумма очков участников.
-- **Казна:** автоматически участнику уходит не больше 5% казны за эпоху, по доле репутации. Всё крупнее — голосование совета.
-- **Рефералы:** таблица из docx без изменений (25 + 25 + 50 + 100 + 150 = 350 XP за друга).
+- **Epoch pool:** 80% to players by share of points, 20% — to the treasury of the best archipelago.
+- **Per-player cap (X):** 5% of the epoch pool. What is not paid out because of the cap moves to the next epoch.
+- **Reward eligibility (N):** 3 days with a completed task and an island of level 3 or higher.
+- **Archipelago:** up to 30 islands, the archipelago score = sum of its members' points.
+- **Treasury:** automatically no more than 5% of the treasury per epoch goes to a member, by share of reputation. Anything bigger — a council vote.
+- **Referrals:** the docx table unchanged (25 + 25 + 50 + 100 + 150 = 350 XP per friend).
 
-## 8. Проверка темпа
+## 8. Pace check
 
-Симуляция: игрок собирает ресурсы и всегда покупает самый дешёвый доступный апгрейд; чужие редкие получает обменом.
+Simulation: the player collects resources and always buys the cheapest available upgrade; foreign rare resources come by exchange.
 
-| Уровень острова | 2 | 3 | 5 | 7 | 10 |
+| Island level | 2 | 3 | 5 | 7 | 10 |
 |---|---|---|---|---|---|
-| Активный (заходит раз в 2 часа) | день 1,4 | день 2,6 | день 6 | день 12 | день 31 |
-| Спокойный (3 раза в день) | день 3 | день 4,7 | день 9 | день 15 | день 35 |
+| Active (logs in every 2 hours) | day 1.4 | day 2.6 | day 6 | day 12 | day 31 |
+| Relaxed (3 times a day) | day 3 | day 4.7 | day 9 | day 15 | day 35 |
 
-Вывод: редкие ресурсы и караваны начинаются к концу первой недели, полный остров — примерно за сезон (4 недели). Допуск к награде активный игрок получает на третий день.
+Conclusion: rare resources and caravans start by the end of the first week, a full island takes about a season (4 weeks). An active player gets reward eligibility on day three.
 
-Чего симуляция не проверяет: хватит ли на всех чужих редких при малом числе игроков и перекосе биомов. При 5–10 игроках на демо нужен запасной источник — см. вопрос про торговца в SPEC §12.2.
+What the simulation does not check: whether there will be enough foreign rare resources for everyone with few players and skewed biomes. With 5–10 players on the demo we need a backup source — see the trader question in SPEC §12.2.
